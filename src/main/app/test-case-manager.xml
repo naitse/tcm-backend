@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ss="http://www.springframework.org/schema/security"
+      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+      xmlns:api-key="http://www.mulesoft.org/schema/mule/api-key" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:jira="http://www.mulesoft.org/schema/mule/jira" xmlns:cors="http://www.mulesoft.org/schema/mule/cors" xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/jira http://www.mulesoft.org/schema/mule/jira/2.0/mule-jira.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd">
+
+<api-key:config signatureRequired="false" name="simpleConfig" persistentDefaultStore="true"/>
+
+<cors:config name="tcm-cors" allowGenericHttpRequests="true" allowAnyOrigin="true" supportsCredentials="false">
+        <cors:supported-methods>
+            <cors:supported-method>GET</cors:supported-method>
+            <cors:supported-method>POST</cors:supported-method>
+            <cors:supported-method>PUT</cors:supported-method>
+            <cors:supported-method>DELETE</cors:supported-method>
+            <cors:supported-method>HEAD</cors:supported-method>
+            <cors:supported-method>OPTIONS</cors:supported-method>
+        </cors:supported-methods>
+        <cors:exposed-headers>
+            <cors:exposed-header>Location</cors:exposed-header>
+            <cors:exposed-header>Date</cors:exposed-header>
+            <cors:exposed-header>Expires</cors:exposed-header>
+            <cors:exposed-header>Content-Type</cors:exposed-header>
+            <cors:exposed-header>Content-Length</cors:exposed-header>
+            <cors:exposed-header>Cache-Control</cors:exposed-header>
+            <cors:exposed-header>Age</cors:exposed-header>
+            <cors:exposed-header>Set-Cookie</cors:exposed-header>
+        </cors:exposed-headers>
+        <cors:supported-headers>
+            <cors:supported-header>Accept</cors:supported-header>
+            <cors:supported-header>apiKey</cors:supported-header>
+            <cors:supported-header>projectid</cors:supported-header>
+            <cors:supported-header>Origin</cors:supported-header>
+            <cors:supported-header>Authorization</cors:supported-header>
+            <cors:supported-header>Content-Type</cors:supported-header>
+            <cors:supported-header>Content-Length</cors:supported-header>
+            <cors:supported-header>Date</cors:supported-header>
+            <cors:supported-header>Location</cors:supported-header>
+            <cors:supported-header>X-Requested-With</cors:supported-header>
+            <cors:supported-header>X-File-Name</cors:supported-header>
+            <cors:supported-header>Cache-Control</cors:supported-header>
+        </cors:supported-headers>
+    </cors:config>
+    
+    <spring:beans>
+     	<spring:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+             <spring:constructor-arg value="${ldap.url}"/>
+             <spring:property name="userDn" value="cn=Manager,dc=muleforge,dc=org"/>
+             <spring:property name="password" value="Ooxae7aiJa"/>
+        </spring:bean>
+  
+        <ss:authentication-manager alias="authenticationManager">
+            <ss:ldap-authentication-provider user-search-filter="(uid={0})" user-search-base="ou=People" />
+        </ss:authentication-manager>
+        
+    </spring:beans>
+    
+    
+	<mule-ss:security-manager>
+	    <mule-ss:delegate-security-provider name="spring-security-ldap" delegate-ref="authenticationManager"/>
+	</mule-ss:security-manager>
+	
+    <jdbc-ee:mysql-data-source name="MySQL_Data_Source" user="${db.user}" password="${db.password}" url="jdbc:mysql://${db.host}:3306/${db.database}" transactionIsolation="UNSPECIFIED" doc:name="MySQL Data Source"/>
+    <jdbc-ee:connector name="Database" dataSource-ref="MySQL_Data_Source" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="Database"/>
+    
+    <jira:config name="Jira" connectionUser="${jira.user}" connectionPassword="${jira.password}" connectionAddress="http://www.mulesoft.org/jira/rpc/soap/jirasoapservice-v2" doc:name="Jira">
+        <jira:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+        <reconnect frequency="20000" count="5"/>
+    </jira:config>
+    
+    <flow name="RlsIterations" doc:name="RlsIterations">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getReleasesIterations" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getReleasesIterations" value="CALL getReleasesIterations(#[header:INBOUND:projectId])"/>
+         </jdbc-ee:outbound-endpoint>
+         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+         <custom-transformer class="com.mulesoft.tcm.model.ReleasesTransformer" doc:name="Java"/>
+         <json:object-to-json-transformer doc:name="Object to JSON"/>
+         <logger level="INFO" message="#[payload]" doc:name="Logger"/>
+    </flow>
+    
+    <flow name="features_flow" doc:name="features_flow">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>        
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getFeatures" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getFeatures" value="CALL getFeatures( #[variable:iterationsMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+    
+    <flow name="testcases_flow" doc:name="testcases_flow">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTCs" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getTCs" value="CALL getTestCasesByFeature(#[variable:featuresMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        
+    </flow>
+    <flow name="executedTestCases" doc:name="executedTestCases">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTcsRunned" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getTcsRunned" value="CALL executedTestCases(#[variable:releasesMemberId], #[variable:iterationsMemberId], #[variable:featuresMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        
+    </flow>
+    <flow name="closeAtDB" doc:name="closeAtDB" processingStrategy="synchronous">
+        <flow-ref name="getJiraIssueState" doc:name="getJiraIssueState"/>
+        <choice doc:name="Choice">
+            <when expression="#[payload.fields.status.id == &quot;5&quot;]">
+               <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
+                   <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
+               </jdbc-ee:outbound-endpoint>
+            </when>
+            <otherwise>
+                <logger level="DEBUG" message="issue already closed" doc:name="Logger"/>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="monitoringExecutedtestcases" doc:name="monitoringExecutedtestcases">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="monitoringETC" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+        <scripting:component doc:name="Groovy">
+            <scripting:script engine="Groovy"><![CDATA[flowVars['toUpdate'] = new java.util.ArrayList();
+return payload;]]></scripting:script>
+        </scripting:component>
+        <foreach doc:name="For Each">
+            <set-variable variableName="featureId" value="#[payload.featureId]" doc:name="featureId"/>
+            <set-variable variableName="issueKey" value="#[payload.issueKey]" doc:name="issueKey"/>
+            <set-variable variableName="states" value="#[payload.states]" doc:name="states"/>
+            <flow-ref name="closeAtDB" doc:name="closeAtDB"/>
+	        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTcsRunned" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+	            <jdbc-ee:query key="getTcsRunned" value="CALL monitoringExecutedTestCases(#[variable:featureId])"/>
+	        </jdbc-ee:outbound-endpoint>
+            <set-payload value="#[payload.resultset1.get(0)]" doc:name="Set Payload"/>
+            <scripting:component doc:name="Groovy">
+                <scripting:script engine="Groovy"><![CDATA[import groovy.json.*
+
+def atUI = flowVars['states'];
+def fromDB = payload;
+
+def json = new JsonBuilder();
+
+
+
+
+if (atUI.state == fromDB.state && atUI.total == fromDB.total && atUI.notrun == fromDB.notrun && atUI.failed == fromDB.failed && atUI.inprogress == fromDB.inprogress && atUI.blocked == fromDB.blocked && atUI.pass == fromDB.pass ){
+	return '';
+}else{
+
+json {
+	notrun fromDB.notrun
+	failed fromDB.failed
+	blocked fromDB.blocked
+	inprogress fromDB.inprogress
+	pass fromDB.pass
+	total fromDB.total
+	state fromDB.state
+}
+
+	flowVars['toUpdate'].add('{"featureId":'+flowVars['featureId']+', "states":' + json.toString() +'}');
+}]]></scripting:script>
+            </scripting:component>
+        </foreach>
+        <set-payload value="#[flowVars['toUpdate'].toString()]" doc:name="Set Payload"/>
+    </flow>
+    
+    <flow name="closeJiraManager" doc:name="closeJiraManager">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="closeJira" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable variableName="featureId" value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;featureId&quot;]]" doc:name="featureId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getIssue" connector-ref="Database" queryTimeout="-1" doc:name="getIssueState">
+            <jdbc-ee:query key="getIssue" value="CALL getIssueState(#[flowVars[&quot;featureId&quot;]])"/>
+        </jdbc-ee:outbound-endpoint>
+        <choice doc:name="Choice">
+            <when expression="#[payload.resultset1[0].state == 2]">
+                <set-variable variableName="issueKey" value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;issueKey&quot;]]" doc:name="issueKey"/>
+                <flow-ref name="getJiraIssueState" doc:name="getJiraIssueState"/>
+                <choice doc:name="Choice">
+                    <when expression="#[payload.fields.status.id == &quot;5&quot;]">
+                        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
+                            <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
+                        </jdbc-ee:outbound-endpoint>
+                        <set-payload value="true" doc:name="Set Payload"/>
+                    </when>
+                    <otherwise>
+                        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="lockIssue" queryTimeout="-1" connector-ref="Database" doc:name="lockIssueAtDB">
+                            <jdbc-ee:query key="lockIssue" value="CALL lockIssue(#[flowVars[&quot;featureId&quot;]])"/>
+                        </jdbc-ee:outbound-endpoint>
+                        <message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
+                            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
+                        </message-properties-transformer>
+                        <http:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]/transitions?expand=transitions.fields" method="GET" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions"/>
+                        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+                        <scripting:component doc:name="verify if issue can be closed">
+                            <scripting:script engine="Groovy"><![CDATA[def transitionId = '';
+
+ for(transition in payload.transitions){ 
+ 	//if(transition.to.id.toInteger() == 6){ 
+ 	//	transitionId = transition.to.id; 
+ 	//}else  
+ 	if(transition.to.id.toInteger() == 5){ 
+ 		transitionId = transition.id; 
+ 	} 
+ }; 
+
+ return transitionId;]]></scripting:script>
+                        </scripting:component>
+                        <choice doc:name="Choice">
+                            <when expression="#[payload != '']">
+                                <jira:progress-workflow-action config-ref="Jira" actionIdString="#[payload]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira"/>
+                                <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
+                                    <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
+                                </jdbc-ee:outbound-endpoint>
+                                <set-payload value="true" doc:name="Set Payload"/>
+                            </when>
+                            <otherwise>
+                                <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="unlockIssue" queryTimeout="-1" connector-ref="Database" doc:name="unlockIssueAtDB">
+                                    <jdbc-ee:query key="unlockIssue" value="CALL unlockIssue(#[flowVars[&quot;featureId&quot;]])"/>
+                                </jdbc-ee:outbound-endpoint>
+                                <logger message="no se puede cerrar" level="INFO" doc:name="Logger"/>
+                                <set-payload value="false" doc:name="Set Payload"/>
+                            </otherwise>
+                        </choice>
+                    </otherwise>
+                </choice>
+            </when>
+            <otherwise>
+                <logger level="INFO" doc:name="Logger"/>
+                <http:response-builder status="409" doc:name="HTTP Response Builder"/>
+            </otherwise>
+         </choice>
+         <catch-exception-strategy doc:name="Catch Exception Strategy">
+	        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryTimeout="-1" doc:name="unlockIssueAtDB" connector-ref="Database" queryKey="unlockIssue">
+	            <jdbc-ee:query key="unlockIssue" value="CALL unlockIssue(#[flowVars[&quot;featureId&quot;]])"/>
+	        </jdbc-ee:outbound-endpoint>
+            <set-payload value="false" doc:name="Set Payload"/>
+        </catch-exception-strategy>
+    </flow>
+    <flow name="getJiraIssueState" doc:name="getJiraIssueState" processingStrategy="synchronous">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getIssueState" doc:name="HTTP"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
+            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
+        </message-properties-transformer>
+        <http:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions" method="GET"/>
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+    </flow>
+    
+   <flow name="createTestCase" doc:name="createTestCase">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="createTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="createTC" value="CALL createTestCase(#[variable:featuresMemberId], #[json:name], #[json:description], #[json:proposed])"/>
+        </jdbc-ee:outbound-endpoint>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="updateTestCase" doc:name="updateTestCase">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="updateTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="updateTC" value="CALL updateTestCase(#[variable:testcasesMemberId], #[json:name], #[json:description], #[json:proposed])"/>
+        </jdbc-ee:outbound-endpoint>
+        
+    </flow>
+    <flow name="deleteTestCase" doc:name="deleteTestCase">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="deleteTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="deleteTC" value="CALL deleteTestCase(#[variable:testcasesMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        
+    </flow>
+    <flow name="updateTestCaseStatus" doc:name="updateTestCaseStatus">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="updateTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="updateTC" value="CALL updateTCStatus(#[variable:testcasesMemberId], #[json:statusId])"/>
+        </jdbc-ee:outbound-endpoint>
+        
+    </flow>
+    
+     <flow name="getPlan" doc:name="getPlan">
+     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getPlan" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getPlan" value="CALL getPlan(#[variable:iterationsMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <custom-transformer class="com.mulesoft.tcm.model.TestPlanTransformer" doc:name="Java"/>
+        
+    </flow>
+   
+     <flow name="getMetric-executed" doc:name="getMetric-executed">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getMetric-executed" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getMetric-executed" value="CALL metrics_executed(#[variable:iterationsMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+    
+    <flow name="getDailyExecution" doc:name="getDailyExecution">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getDailyExecution" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getDailyExecution" value="CALL metrics_dailyExecution(#[variable:iterationsMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+    
+    <flow name="getIterationsTrend" doc:name="getIterationsTrend">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getIterationsTrend" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getIterationsTrend" value="CALL metrics_iterationsTrend()"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="getSuitesforTc" doc:name="getSuitesforTc">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSuitesforTc" doc:name="getSuitesforTc"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getSuitesforTc" value="CALL getSuitesforTc(#[flowVars['tcId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="removeSuitesforTc" doc:name="removeSuitesforTc">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="removeSuitesforTc" doc:name="removeSuitesforTc"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="removeSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="removeSuitesforTc" value="CALL removeSuitesforTc(#[flowVars['tcId']],#[flowVars['label']])"/>
+        </jdbc-ee:outbound-endpoint>
+    </flow>
+    <flow name="insertSuitesforTc" doc:name="insertSuitesforTc">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="insertSuitesforTc" doc:name="insertSuitesforTc"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="removeSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="removeSuitesforTc" value="CALL insertNewTag(#[flowVars['tcId']],#[flowVars['label']],#[flowVars['projectId']])"/>
+        </jdbc-ee:outbound-endpoint>
+    </flow>
+    <flow name="getSuites" doc:name="getSuites" >
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSuites" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+		<set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuites" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+			<jdbc-ee:query key="getSuites" value="CALL getSuites(#[flowVars['projectId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+     <flow name="jira-get-iterations" doc:name="jira-get-iterations">
+     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+    	<message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
+            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
+            <add-message-property key="Content-Type" value="application/json"/>
+        </message-properties-transformer>
+        
+        <http:outbound-endpoint exchange-pattern="request-response" disableTransportTransformer="true" contentType="application/json"  doc:name="HTTP" host="www.mulesoft.org" path="jira/rest/greenhopper/1.0/sprints/53" port="80" method="GET"/>
+        <echo-component doc:name="Echo"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>         
+    </flow>
+    <flow name="jira-get-issues" doc:name="jira-get-issues">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-payload value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;sprint&quot;]]" doc:name="Set Payload"/>
+        <regex-filter pattern="[0-9]" doc:name="Regex"/>        
+        <jira:get-issues-from-jql-search config-ref="Jira"  doc:name="Jira" jqlSearch='project = ION and sprint in (#[message.inboundProperties["http.query.params"]["sprint"] ]) and type not in ("Task", "Technical task") and status not in ("Resolved")' maxNumResults="100"/>        
+    </flow>
+    <flow name="createRequirement" doc:name="createRequirement">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createReq" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="createReq" value="CALL createFeature(#[variable:iterationsMemberId], #[json:key], #[json:summary], #[json:desc])"/>
+        </jdbc-ee:outbound-endpoint>
+   </flow>
+   <flow name="createRelease" doc:name="createRelease">
+   		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createRls" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="createRls" value="CALL createRelease(#[json:name])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-variable value="#[payload.resultset1.get(0).releaseId]" variableName="releasesMemberId" doc:name="Variable" />
+   </flow>
+   <flow name="createIteration" doc:name="createIteration">
+   		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createIter" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="createIter" value="CALL createIteration(#[variable:releasesMemberId], #[json:name])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-variable value="#[payload.resultset1.get(0).iterId]" variableName="iterationsMemberId" doc:name="Variable" />
+   </flow>
+   <flow name="getUserProjects" doc:name="getUserProjects">
+   		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getUserProject" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getUserProject" value="CALL getUserProjects(#[variable:usersMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+   </flow>
+   <flow name="validate_api_key" doc:name="validate_api_key">
+  		<api-key:validate apiKey="#[header:INBOUND:apiKey]" config-ref="simpleConfig"/>        
+    </flow>
+    <flow name="register_api_key" doc:name="register_api_key">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="api/get_api_key">
+        	<cors:filter config-ref="tcm-cors"/>
+        	<mule-ss:http-security-filter realm="mule"/>
+        </http:inbound-endpoint>
+        <api-key:register config-ref="simpleConfig"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+</mule>
