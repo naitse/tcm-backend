@@ -18,56 +18,60 @@
         	<member>
         		<representation mediaType="application/json" />
         		<create flow-ref="createRelease"></create>
-		       		<document-resource name="metricgetIterationsTrend">
-			        	<representation mediaType="application/json" />
-			        	<retrieve flow-ref="getIterationsTrend"></retrieve>
-			        </document-resource>
+	       		<document-resource name="metricgetIterationsTrend">
+		        	<representation mediaType="application/json" />
+		        	<retrieve flow-ref="getIterationsTrend"></retrieve>
+		        </document-resource>
+		        <document-resource name="features_iterations">
+		        	<representation mediaType="application/json" />
+		        	<retrieve flow-ref="getFeaturesIterations"></retrieve>
+		        </document-resource>
         		<collection-resource name="iterations">
 		       		<member>
 		       			<representation mediaType="application/json" />
 		       			<create flow-ref="createIteration"></create>
-		       		<document-resource name="metricDailyExecution">
-			        	<representation mediaType="application/json" />
-			        	<retrieve flow-ref="getDailyExecution"></retrieve>
-			        </document-resource>
-			        <document-resource name="plan">
-			        	<representation mediaType="application/json" />
-			        	<retrieve flow-ref="getPlan"></retrieve>
-			        </document-resource>
-			        <document-resource name="metricExecuted">
-			        	<representation mediaType="application/json" />
-			        	<retrieve flow-ref="getMetric-executed"></retrieve>
-			        </document-resource>
-			        <collection-resource name="features">            
-			       		<retrieve flow-ref="features_flow">
-			       		<representation mediaType="application/json" />
-			       		</retrieve>   
-			       		<member>
+			       		<document-resource name="metricDailyExecution">
 				        	<representation mediaType="application/json" />
-				        	<create flow-ref="createRequirement"/>
-				        	<document-resource name="executedtestcases">
-					            <representation mediaType="application/json" />
-					            <retrieve flow-ref="executedTestCases"/>	            
-				        	</document-resource>
-				        	<collection-resource name="testcases">
-					        <retrieve flow-ref="testcases_flow">
+				        	<retrieve flow-ref="getDailyExecution"></retrieve>
+				        </document-resource>
+				        <document-resource name="plan">
+				        	<representation mediaType="application/json" />
+				        	<retrieve flow-ref="getPlan"></retrieve>
+				        </document-resource>
+				        <document-resource name="metricExecuted">
+				        	<representation mediaType="application/json" />
+				        	<retrieve flow-ref="getMetric-executed"></retrieve>
+				        </document-resource>
+				        <collection-resource name="features">            
+				       		<retrieve flow-ref="features_flow">
+				       		<representation mediaType="application/json" />
+				       		</retrieve>   
+				       		<member>
 					        	<representation mediaType="application/json" />
-					        </retrieve>
-					        <member>
-						    	<representation mediaType="application/json" />
-						        <create flow-ref="createTestCase"/>
-						        <update flow-ref="updateTestCase"/>
-						        <delete flow-ref="deleteTestCase"/>
-						        <document-resource name="status">
-				            		<representation mediaType="application/json" />
-				            		<update flow-ref="updateTestCaseStatus"/>
-							    </document-resource>
-			    			</member> 
-						</collection-resource>
-					    </member>
-		    		</collection-resource>
+					        	<create flow-ref="createRequirement"/>
+					        	<document-resource name="executedtestcases">
+						            <representation mediaType="application/json" />
+						            <retrieve flow-ref="executedTestCases"/>	            
+					        	</document-resource>
+					        	<collection-resource name="testcases">
+							        <retrieve flow-ref="testcases_flow">
+							        	<representation mediaType="application/json" />
+							        </retrieve>
+							        <member>
+								    	<representation mediaType="application/json" />
+								        <create flow-ref="createTestCase"/>
+								        <update flow-ref="updateTestCase"/>
+								        <delete flow-ref="deleteTestCase"/>
+								        <document-resource name="status">
+						            		<representation mediaType="application/json" />
+						            		<update flow-ref="updateTestCaseStatus"/>
+									    </document-resource>
+					    			</member> 
+								</collection-resource>
+						    </member>
+			    		</collection-resource>
 		       		</member>
- 		</collection-resource>
+ 				</collection-resource>
         	</member>
         </collection-resource>
 	      

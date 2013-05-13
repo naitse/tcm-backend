@@ -1,0 +1,13 @@
+
+.metadata/*
+
+target/**/*
+.classpath
+
+.settings/org.mulesoft.exportwizardsettings.prefs
+
+target/mvn-eclipse-cache.properties
+
+target/classes/test-case-manager.xml
+
+target/classes/tcm-api.xml

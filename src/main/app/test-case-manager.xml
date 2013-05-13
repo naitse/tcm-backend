@@ -39,7 +39,7 @@ http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/
         <cors:supported-headers>
             <cors:supported-header>Accept</cors:supported-header>
             <cors:supported-header>apiKey</cors:supported-header>
-            <cors:supported-header>projectid</cors:supported-header>
+            <cors:supported-header>projectId</cors:supported-header>
             <cors:supported-header>Origin</cors:supported-header>
             <cors:supported-header>Authorization</cors:supported-header>
             <cors:supported-header>Content-Type</cors:supported-header>
@@ -86,7 +86,7 @@ http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/
          <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
          <custom-transformer class="com.mulesoft.tcm.model.ReleasesTransformer" doc:name="Java"/>
          <json:object-to-json-transformer doc:name="Object to JSON"/>
-         <logger level="INFO" message="#[payload]" doc:name="Logger"/>
+         
     </flow>
     
     <flow name="features_flow" doc:name="features_flow">
@@ -238,7 +238,7 @@ json {
                 </choice>
             </when>
             <otherwise>
-                <logger level="INFO" doc:name="Logger"/>
+                
                 <http:response-builder status="409" doc:name="HTTP Response Builder"/>
             </otherwise>
          </choice>
@@ -373,7 +373,7 @@ json {
         
         <http:outbound-endpoint exchange-pattern="request-response" disableTransportTransformer="true" contentType="application/json"  doc:name="HTTP" host="www.mulesoft.org" path="jira/rest/greenhopper/1.0/sprints/53" port="80" method="GET"/>
         <echo-component doc:name="Echo"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>         
+                 
     </flow>
     <flow name="jira-get-issues" doc:name="jira-get-issues">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
@@ -390,7 +390,7 @@ json {
    <flow name="createRelease" doc:name="createRelease">
    		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createRls" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="createRls" value="CALL createRelease(#[json:name])"/>
+            <jdbc-ee:query key="createRls" value="CALL createRelease(#[header:INBOUND:projectId], #[json:name])"/>
         </jdbc-ee:outbound-endpoint>
         <set-variable value="#[payload.resultset1.get(0).releaseId]" variableName="releasesMemberId" doc:name="Variable" />
    </flow>
@@ -405,6 +405,13 @@ json {
    		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getUserProject" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getUserProject" value="CALL getUserProjects(#[variable:usersMemberId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+   </flow>
+   <flow name="getFeaturesIterations" doc:name="getFeaturesIterations">
+   		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getFeaturesIterations" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getFeaturesIterations" value="CALL getFeaturesIterations()"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
    </flow>
