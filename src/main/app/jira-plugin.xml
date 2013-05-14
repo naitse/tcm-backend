@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:jira="http://www.mulesoft.org/schema/mule/jira"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jira http://www.mulesoft.org/schema/mule/jira/2.0/mule-jira.xsd">
+
+     <flow name="jira-get-iterations" doc:name="jira-get-iterations">
+     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+     	<set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
+        <flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
+        <flow-ref name="setJiraAuthenticationHeaders" doc:name="Flow Reference setJiraAuthenticationHeaders"/>        
+        <http:outbound-endpoint exchange-pattern="request-response" disableTransportTransformer="true" contentType="application/json"  doc:name="HTTP" host="www.mulesoft.org" path="#[payload.get('jira.greenhopper')]" port="80" method="GET"/>
+        <echo-component doc:name="Echo"/>
+    </flow>
+
+    <flow name="jira-get-issues" doc:name="jira-get-issues">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-payload value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;sprint&quot;]]" doc:name="Set Payload"/>
+        <regex-filter pattern="[0-9]" doc:name="Regex"/>
+        <set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
+        <flow-ref name="getPluginConfig" doc:name="Flow Reference"/>        
+        <jira:get-issues-from-jql-search  connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]"  doc:name="Jira" jqlSearch="project = #[payload.get('jira.project')] and sprint in (#[message.inboundProperties['http.query.params']['sprint'] ]) and type not in ('Task', 'Technical task') and status not in ('Resolved')" maxNumResults="100" config-ref=""/>        
+    </flow>
+    
+</mule>

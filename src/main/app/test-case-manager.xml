@@ -15,69 +15,14 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
 http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd">
 
-<api-key:config signatureRequired="false" name="simpleConfig" persistentDefaultStore="true"/>
 
-<cors:config name="tcm-cors" allowGenericHttpRequests="true" allowAnyOrigin="true" supportsCredentials="false">
-        <cors:supported-methods>
-            <cors:supported-method>GET</cors:supported-method>
-            <cors:supported-method>POST</cors:supported-method>
-            <cors:supported-method>PUT</cors:supported-method>
-            <cors:supported-method>DELETE</cors:supported-method>
-            <cors:supported-method>HEAD</cors:supported-method>
-            <cors:supported-method>OPTIONS</cors:supported-method>
-        </cors:supported-methods>
-        <cors:exposed-headers>
-            <cors:exposed-header>Location</cors:exposed-header>
-            <cors:exposed-header>Date</cors:exposed-header>
-            <cors:exposed-header>Expires</cors:exposed-header>
-            <cors:exposed-header>Content-Type</cors:exposed-header>
-            <cors:exposed-header>Content-Length</cors:exposed-header>
-            <cors:exposed-header>Cache-Control</cors:exposed-header>
-            <cors:exposed-header>Age</cors:exposed-header>
-            <cors:exposed-header>Set-Cookie</cors:exposed-header>
-        </cors:exposed-headers>
-        <cors:supported-headers>
-            <cors:supported-header>Accept</cors:supported-header>
-            <cors:supported-header>apiKey</cors:supported-header>
-            <cors:supported-header>projectId</cors:supported-header>
-            <cors:supported-header>Origin</cors:supported-header>
-            <cors:supported-header>Authorization</cors:supported-header>
-            <cors:supported-header>Content-Type</cors:supported-header>
-            <cors:supported-header>Content-Length</cors:supported-header>
-            <cors:supported-header>Date</cors:supported-header>
-            <cors:supported-header>Location</cors:supported-header>
-            <cors:supported-header>X-Requested-With</cors:supported-header>
-            <cors:supported-header>X-File-Name</cors:supported-header>
-            <cors:supported-header>Cache-Control</cors:supported-header>
-        </cors:supported-headers>
-    </cors:config>
-    
-    <spring:beans>
-     	<spring:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
-             <spring:constructor-arg value="${ldap.url}"/>
-             <spring:property name="userDn" value="cn=Manager,dc=muleforge,dc=org"/>
-             <spring:property name="password" value="Ooxae7aiJa"/>
-        </spring:bean>
-  
-        <ss:authentication-manager alias="authenticationManager">
-            <ss:ldap-authentication-provider user-search-filter="(uid={0})" user-search-base="ou=People" />
-        </ss:authentication-manager>
-        
-    </spring:beans>
-    
-    
-	<mule-ss:security-manager>
-	    <mule-ss:delegate-security-provider name="spring-security-ldap" delegate-ref="authenticationManager"/>
-	</mule-ss:security-manager>
+
+
 	
     <jdbc-ee:mysql-data-source name="MySQL_Data_Source" user="${db.user}" password="${db.password}" url="jdbc:mysql://${db.host}:3306/${db.database}" transactionIsolation="UNSPECIFIED" doc:name="MySQL Data Source"/>
     <jdbc-ee:connector name="Database" dataSource-ref="MySQL_Data_Source" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="Database"/>
     
-    <jira:config name="Jira" connectionUser="${jira.user}" connectionPassword="${jira.password}" connectionAddress="http://www.mulesoft.org/jira/rpc/soap/jirasoapservice-v2" doc:name="Jira">
-        <jira:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
-        <reconnect frequency="20000" count="5"/>
-    </jira:config>
-    
+   
     <flow name="RlsIterations" doc:name="RlsIterations">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getReleasesIterations" queryTimeout="-1" connector-ref="Database" doc:name="Database">
@@ -220,7 +165,7 @@ json {
                         </scripting:component>
                         <choice doc:name="Choice">
                             <when expression="#[payload != '']">
-                                <jira:progress-workflow-action config-ref="Jira" actionIdString="#[payload]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira"/>
+                                <jira:progress-workflow-action connectionUser="#[json:jira.user]" connectionPassword="#[json:jira.password]" connectionAddress="#[json:jira.address]" actionIdString="#[payload]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira" config-ref=""/>
                                 <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
                                     <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
                                 </jdbc-ee:outbound-endpoint>
@@ -364,23 +309,8 @@ json {
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
-     <flow name="jira-get-iterations" doc:name="jira-get-iterations">
-     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-    	<message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
-            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
-            <add-message-property key="Content-Type" value="application/json"/>
-        </message-properties-transformer>
-        
-        <http:outbound-endpoint exchange-pattern="request-response" disableTransportTransformer="true" contentType="application/json"  doc:name="HTTP" host="www.mulesoft.org" path="jira/rest/greenhopper/1.0/sprints/53" port="80" method="GET"/>
-        <echo-component doc:name="Echo"/>
-                 
-    </flow>
-    <flow name="jira-get-issues" doc:name="jira-get-issues">
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-        <set-payload value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;sprint&quot;]]" doc:name="Set Payload"/>
-        <regex-filter pattern="[0-9]" doc:name="Regex"/>        
-        <jira:get-issues-from-jql-search config-ref="Jira"  doc:name="Jira" jqlSearch='project = ION and sprint in (#[message.inboundProperties["http.query.params"]["sprint"] ]) and type not in ("Task", "Technical task") and status not in ("Resolved")' maxNumResults="100"/>        
-    </flow>
+
+    
     <flow name="createRequirement" doc:name="createRequirement">
     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createReq" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
@@ -415,15 +345,5 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
    </flow>
-   <flow name="validate_api_key" doc:name="validate_api_key">
-  		<api-key:validate apiKey="#[header:INBOUND:apiKey]" config-ref="simpleConfig"/>        
-    </flow>
-    <flow name="register_api_key" doc:name="register_api_key">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="api/get_api_key">
-        	<cors:filter config-ref="tcm-cors"/>
-        	<mule-ss:http-security-filter realm="mule"/>
-        </http:inbound-endpoint>
-        <api-key:register config-ref="simpleConfig"/>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-    </flow>
+  
 </mule>

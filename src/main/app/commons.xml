@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc"
+	xmlns:api-key="http://www.mulesoft.org/schema/mule/api-key"
+	xmlns:cors="http://www.mulesoft.org/schema/mule/cors"
+	xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
+	xmlns:ss="http://www.springframework.org/schema/security"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd
+http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd">
+	<api-key:config signatureRequired="false" name="simpleConfig" persistentDefaultStore="true"/>
+	
+	<cors:config name="tcm-cors" allowGenericHttpRequests="true" allowAnyOrigin="true" supportsCredentials="false">
+        <cors:supported-methods>
+            <cors:supported-method>GET</cors:supported-method>
+            <cors:supported-method>POST</cors:supported-method>
+            <cors:supported-method>PUT</cors:supported-method>
+            <cors:supported-method>DELETE</cors:supported-method>
+            <cors:supported-method>HEAD</cors:supported-method>
+            <cors:supported-method>OPTIONS</cors:supported-method>
+        </cors:supported-methods>
+        <cors:exposed-headers>
+            <cors:exposed-header>Location</cors:exposed-header>
+            <cors:exposed-header>Date</cors:exposed-header>
+            <cors:exposed-header>Expires</cors:exposed-header>
+            <cors:exposed-header>Content-Type</cors:exposed-header>
+            <cors:exposed-header>Content-Length</cors:exposed-header>
+            <cors:exposed-header>Cache-Control</cors:exposed-header>
+            <cors:exposed-header>Age</cors:exposed-header>
+            <cors:exposed-header>Set-Cookie</cors:exposed-header>
+        </cors:exposed-headers>
+        <cors:supported-headers>
+            <cors:supported-header>Accept</cors:supported-header>
+            <cors:supported-header>apiKey</cors:supported-header>
+            <cors:supported-header>projectId</cors:supported-header>
+            <cors:supported-header>Origin</cors:supported-header>
+            <cors:supported-header>Authorization</cors:supported-header>
+            <cors:supported-header>Content-Type</cors:supported-header>
+            <cors:supported-header>Content-Length</cors:supported-header>
+            <cors:supported-header>Date</cors:supported-header>
+            <cors:supported-header>Location</cors:supported-header>
+            <cors:supported-header>X-Requested-With</cors:supported-header>
+            <cors:supported-header>X-File-Name</cors:supported-header>
+            <cors:supported-header>Cache-Control</cors:supported-header>
+        </cors:supported-headers>
+    </cors:config>
+    
+    <spring:beans>
+     	<spring:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+             <spring:constructor-arg value="${ldap.url}"/>
+             <spring:property name="userDn" value="cn=Manager,dc=muleforge,dc=org"/>
+             <spring:property name="password" value="Ooxae7aiJa"/>
+        </spring:bean>
+  
+        <ss:authentication-manager alias="authenticationManager">
+            <ss:ldap-authentication-provider user-search-filter="(uid={0})" user-search-base="ou=People" />
+        </ss:authentication-manager>
+        
+    </spring:beans>
+    
+    
+	<mule-ss:security-manager>
+	    <mule-ss:delegate-security-provider name="spring-security-ldap" delegate-ref="authenticationManager"/>
+	</mule-ss:security-manager>
+	
+	<flow name="getPluginConfig" doc:name="getPluginConfig">
+    	<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getPluginConfig" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getPluginConfig" value="CALL getPluginConfig(#[header:INBOUND:projectId], #[variable:pluginId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <custom-transformer class="com.mulesoft.tcm.model.PluginsSettingsTransformer" doc:name="Java"/>
+    </flow>
+    
+    <flow name="setJiraAuthenticationHeaders">
+    
+    	<scripting:component doc:name="Groovy">
+            <scripting:script engine="Groovy"><![CDATA[String credentials = payload.get('jira.user') + ':' + payload.get('jira.password')
+
+flowVars['base64credentials'] = 'Basic ' + org.mule.util.Base64.encodeBytes(credentials.getBytes());
+
+return originalPayload;]]></scripting:script>
+        </scripting:component>
+    	<message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
+            <add-message-property key="Content-Type" value="application/json"/>
+            <add-message-property key="Authorization" value="#[variable:base64credentials]"/>
+        </message-properties-transformer>
+    </flow>
+    
+     <flow name="validate_api_key" doc:name="validate_api_key">
+  		<api-key:validate apiKey="#[header:INBOUND:apiKey]" config-ref="simpleConfig"/>        
+    </flow>
+    
+    <flow name="register_api_key" doc:name="register_api_key">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" doc:name="HTTP" path="api/get_api_key">
+        	<cors:filter config-ref="tcm-cors"/>
+        	<mule-ss:http-security-filter realm="mule"/>
+        </http:inbound-endpoint>
+        <api-key:register config-ref="simpleConfig"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    
+</mule>
