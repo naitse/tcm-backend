@@ -40,9 +40,7 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
             <cors:exposed-header>Set-Cookie</cors:exposed-header>
         </cors:exposed-headers>
         <cors:supported-headers>
-            <cors:supported-header>Accept</cors:supported-header>
-            <cors:supported-header>apiKey</cors:supported-header>
-            <cors:supported-header>projectId</cors:supported-header>
+            <cors:supported-header>Accept</cors:supported-header>            
             <cors:supported-header>Origin</cors:supported-header>
             <cors:supported-header>Authorization</cors:supported-header>
             <cors:supported-header>Content-Type</cors:supported-header>
@@ -58,8 +56,8 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
     <spring:beans>
      	<spring:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
              <spring:constructor-arg value="${ldap.url}"/>
-             <spring:property name="userDn" value="cn=Manager,dc=muleforge,dc=org"/>
-             <spring:property name="password" value="Ooxae7aiJa"/>
+             <spring:property name="userDn" value="${ldap.user}"/>
+             <spring:property name="password" value="${ldap.password}"/>
         </spring:bean>
   
         <ss:authentication-manager alias="authenticationManager">

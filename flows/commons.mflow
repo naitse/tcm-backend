@@ -24,9 +24,7 @@
             &lt;cors:exposed-header&gt;Set-Cookie&lt;/cors:exposed-header&gt;
         &lt;/cors:exposed-headers&gt;
         &lt;cors:supported-headers&gt;
-            &lt;cors:supported-header&gt;Accept&lt;/cors:supported-header&gt;
-            &lt;cors:supported-header&gt;apiKey&lt;/cors:supported-header&gt;
-            &lt;cors:supported-header&gt;projectId&lt;/cors:supported-header&gt;
+            &lt;cors:supported-header&gt;Accept&lt;/cors:supported-header&gt;            
             &lt;cors:supported-header&gt;Origin&lt;/cors:supported-header&gt;
             &lt;cors:supported-header&gt;Authorization&lt;/cors:supported-header&gt;
             &lt;cors:supported-header&gt;Content-Type&lt;/cors:supported-header&gt;
@@ -57,45 +55,45 @@
             <property name="name"/>
             <property name="autowire"/>
             <property name="destroy-method"/>
-            <property value="33" name="auxiliary;index"/>
-            <property value="32" name="auxiliary;wrapIn"/>
+            <property value="31" name="auxiliary;index"/>
+            <property value="30" name="auxiliary;wrapIn"/>
             <property name="depends-on"/>
             <property-collection name="@http://www.springframework.org/schema/beans/constructor-arg;0">
                 <property value="${ldap.url}" name="value"/>
-                <property value="34" name="auxiliary;index"/>
-                <property value="34" name="auxiliary;wrapIn"/>
+                <property value="32" name="auxiliary;index"/>
+                <property value="32" name="auxiliary;wrapIn"/>
             </property-collection>
             <property-collection name="@http://www.springframework.org/schema/beans/property;1">
                 <property value="userDn" name="name"/>
-                <property value="cn=Manager,dc=muleforge,dc=org" name="value"/>
-                <property value="35" name="auxiliary;index"/>
-                <property value="35" name="auxiliary;wrapIn"/>
+                <property value="${ldap.user}" name="value"/>
+                <property value="33" name="auxiliary;index"/>
+                <property value="33" name="auxiliary;wrapIn"/>
             </property-collection>
             <property-collection name="@http://www.springframework.org/schema/beans/property;2">
                 <property value="password" name="name"/>
-                <property value="Ooxae7aiJa" name="value"/>
-                <property value="36" name="auxiliary;index"/>
-                <property value="36" name="auxiliary;wrapIn"/>
+                <property value="${ldap.password}" name="value"/>
+                <property value="34" name="auxiliary;index"/>
+                <property value="34" name="auxiliary;wrapIn"/>
             </property-collection>
         </properties>
     </global-element>
-    <global-unknown index="37" parentIndex="32" description="false" wrapNSURL="http://www.springframework.org/schema/beans" wrapNSPref="spring" wrapIn="beans" entity-id="global-unknown#3">
+    <global-unknown index="35" parentIndex="30" description="false" wrapNSURL="http://www.springframework.org/schema/beans" wrapNSPref="spring" wrapIn="beans" entity-id="global-unknown#3">
         <content>&lt;ss:authentication-manager xmlns:ss=&quot;http://www.springframework.org/schema/security&quot; alias=&quot;authenticationManager&quot;&gt;
             &lt;ss:ldap-authentication-provider user-search-filter=&quot;(uid={0})&quot; user-search-base=&quot;ou=People&quot;/&gt;
         &lt;/ss:authentication-manager&gt;</content>
     </global-unknown>
-    <global-unknown index="39" description="false" entity-id="global-unknown#4">
+    <global-unknown index="37" description="false" entity-id="global-unknown#4">
         <content>&lt;mule-ss:security-manager xmlns:mule-ss=&quot;http://www.mulesoft.org/schema/mule/spring-security&quot;&gt;
 	    &lt;mule-ss:delegate-security-provider name=&quot;spring-security-ldap&quot; delegate-ref=&quot;authenticationManager&quot;/&gt;
 	&lt;/mule-ss:security-manager&gt;</content>
     </global-unknown>
-    <flow SubFlow="false" name="getPluginConfig" entity-id="4eb7426f-6f1c-452b-87ac-6b877be59aa7">
+    <flow SubFlow="false" name="getPluginConfig" entity-id="8de21ed2-4627-44e1-b517-cef4b018b90f">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
-            <property value="41" name="auxiliary;index"/>
+            <property value="39" name="auxiliary;index"/>
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#1">
             <graphicalData height="0" width="0" y="0" x="0"/>
@@ -115,15 +113,15 @@
                     <property name="address"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
-                    <property value="42" name="auxiliary;index"/>
+                    <property value="40" name="auxiliary;index"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
                         <property value="CALL getPluginConfig(#[header:INBOUND:projectId], #[variable:pluginId])" name="value"/>
                         <property value="getPluginConfig" name="key"/>
-                        <property value="43" name="auxiliary;index"/>
-                        <property value="43" name="auxiliary;wrapIn"/>
+                        <property value="41" name="auxiliary;index"/>
+                        <property value="41" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </endpoint>
@@ -131,7 +129,7 @@
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="#[payload.resultset1]" name="value"/>
-                    <property value="44" name="auxiliary;index"/>
+                    <property value="42" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="org.mule.tooling.ui.modules.core.pattern.customTransformer" name="Java" entity-id="Java#1">
@@ -142,18 +140,18 @@
                     <property name="encoding"/>
                     <property value="com.mulesoft.tcm.model.PluginsSettingsTransformer" name="class"/>
                     <property name="mimeType"/>
-                    <property value="45" name="auxiliary;index"/>
+                    <property value="43" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="setJiraAuthenticationHeaders" entity-id="62fd4a37-e11b-48fa-a220-a0cd10c5f25f">
+    <flow SubFlow="false" name="setJiraAuthenticationHeaders" entity-id="2de8f337-0a85-4010-9970-44765c532f3c">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
-            <property value="46" name="auxiliary;index"/>
+            <property value="44" name="auxiliary;index"/>
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#2">
             <graphicalData height="0" width="0" y="0" x="0"/>
@@ -161,18 +159,18 @@
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property name="script-ref"/>
-                    <property value="47" name="auxiliary;index"/>
+                    <property value="45" name="auxiliary;index"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script-for-properties;0">
                         <property value="String credentials = payload.get('jira.user') + ':' + payload.get('jira.password')&#xA;&#xA;flowVars['base64credentials'] = 'Basic ' + org.mule.util.Base64.encodeBytes(credentials.getBytes());&#xA;&#xA;return originalPayload;" name="text"/>
                         <property value="Groovy" name="engine"/>
-                        <property value="48" name="auxiliary;index"/>
-                        <property value="48" name="auxiliary;wrapIn"/>
+                        <property value="46" name="auxiliary;index"/>
+                        <property value="46" name="auxiliary;wrapIn"/>
                     </property-collection>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/scripting/script;0">
                         <property value="String credentials = payload.get('jira.user') + ':' + payload.get('jira.password')&#xA;&#xA;flowVars['base64credentials'] = 'Basic ' + org.mule.util.Base64.encodeBytes(credentials.getBytes());&#xA;&#xA;return originalPayload;" name="text"/>
                         <property value="Groovy" name="engine"/>
-                        <property value="48" name="auxiliary;index"/>
-                        <property value="48" name="auxiliary;wrapIn"/>
+                        <property value="46" name="auxiliary;index"/>
+                        <property value="46" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </pattern>
@@ -185,46 +183,46 @@
                     <property value="true" name="overwrite"/>
                     <property name="encoding"/>
                     <property name="mimeType"/>
-                    <property value="49" name="auxiliary;index"/>
+                    <property value="47" name="auxiliary;index"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/add-message-property;0">
                         <property value="application/json" name="value"/>
                         <property value="Content-Type" name="key"/>
-                        <property value="50" name="auxiliary;index"/>
-                        <property value="50" name="auxiliary;wrapIn"/>
+                        <property value="48" name="auxiliary;index"/>
+                        <property value="48" name="auxiliary;wrapIn"/>
                     </property-collection>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/core/add-message-property;1">
                         <property value="#[variable:base64credentials]" name="value"/>
                         <property value="Authorization" name="key"/>
-                        <property value="51" name="auxiliary;index"/>
-                        <property value="51" name="auxiliary;wrapIn"/>
+                        <property value="49" name="auxiliary;index"/>
+                        <property value="49" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="validate_api_key" entity-id="29661f85-d949-4cfe-882c-5038bf817615">
+    <flow SubFlow="false" name="validate_api_key" entity-id="1c953b33-a82d-4072-8902-522d09f8ca5a">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="50" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#3">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <unknown index="51" description="false" entity-id="unknown#1">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <content>&lt;api-key:validate xmlns:api-key=&quot;http://www.mulesoft.org/schema/mule/api-key&quot; apiKey=&quot;#[header:INBOUND:apiKey]&quot; config-ref=&quot;simpleConfig&quot;/&gt;</content>
+            </unknown>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="register_api_key" entity-id="9ad39504-1145-4db1-bf81-67787a1f2bfd">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
             <property value="52" name="auxiliary;index"/>
-        </properties>
-        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#3">
-            <graphicalData height="0" width="0" y="0" x="0"/>
-            <unknown index="53" description="false" entity-id="unknown#1">
-                <graphicalData height="0" width="0" y="0" x="0"/>
-                <content>&lt;api-key:validate xmlns:api-key=&quot;http://www.mulesoft.org/schema/mule/api-key&quot; apiKey=&quot;#[header:INBOUND:apiKey]&quot; config-ref=&quot;simpleConfig&quot;/&gt;</content>
-            </unknown>
-        </lane>
-    </flow>
-    <flow SubFlow="false" name="register_api_key" entity-id="55400e61-5fe1-436a-8122-f542e8f6bcdf">
-        <properties>
-            <property name="processingStrategy"/>
-            <property name="processingStrategy2"/>
-            <property name="bussinessEventsLabel"/>
-            <property name="tracking:enable-default-events"/>
-            <property value="54" name="auxiliary;index"/>
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#4">
             <graphicalData height="0" width="0" y="0" x="0"/>
@@ -253,11 +251,11 @@
                     <property name="user"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
-                    <property value="55" name="auxiliary;index"/>
+                    <property value="53" name="auxiliary;index"/>
                     <property name="connector-ref"/>
                 </properties>
             </endpoint>
-            <unknown index="58" description="false" entity-id="unknown#2">
+            <unknown index="56" description="false" entity-id="unknown#2">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <content>&lt;api-key:register xmlns:api-key=&quot;http://www.mulesoft.org/schema/mule/api-key&quot; config-ref=&quot;simpleConfig&quot;/&gt;</content>
             </unknown>
@@ -270,7 +268,7 @@
                     <property name="encoding"/>
                     <property name="mapper-ref"/>
                     <property name="mimeType"/>
-                    <property value="59" name="auxiliary;index"/>
+                    <property value="57" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
