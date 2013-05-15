@@ -74,7 +74,7 @@ http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/
     <flow name="monitoringExecutedtestcases" doc:name="monitoringExecutedtestcases">
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="monitoringETC" doc:name="HTTP"/>
         <cors:filter config-ref="tcm-cors"/>
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <flow-ref name="validate_api_key" doc:name="validate_api_key"/>
         <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
         <scripting:component doc:name="Groovy">
             <scripting:script engine="Groovy"><![CDATA[flowVars['toUpdate'] = new java.util.ArrayList();
@@ -121,11 +121,11 @@ json {
         <set-payload value="#[flowVars['toUpdate'].toString()]" doc:name="Set Payload"/>
     </flow>
     
-    <flow name="closeJiraManager" doc:name="closeJiraManager">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="closeJira" doc:name="HTTP"/>
-        <cors:filter config-ref="tcm-cors"/>
+    <flow name="closeJiraManager" doc:name="closeJiraManager" processingStrategy="synchronous">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <set-variable variableName="featureId" value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;featureId&quot;]]" doc:name="featureId"/>
+    	<set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
+        <set-variable variableName="projectId" value="#[header:inbound:projectId]" doc:name="projectId"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getIssue" connector-ref="Database" queryTimeout="-1" doc:name="getIssueState">
             <jdbc-ee:query key="getIssue" value="CALL getIssueState(#[flowVars[&quot;featureId&quot;]])"/>
         </jdbc-ee:outbound-endpoint>
@@ -144,9 +144,8 @@ json {
                         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="lockIssue" queryTimeout="-1" connector-ref="Database" doc:name="lockIssueAtDB">
                             <jdbc-ee:query key="lockIssue" value="CALL lockIssue(#[flowVars[&quot;featureId&quot;]])"/>
                         </jdbc-ee:outbound-endpoint>
-                        <message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
-                            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
-                        </message-properties-transformer>
+				        <flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
+				        <flow-ref name="setJiraAuthenticationHeaders" doc:name="Flow Reference setJiraAuthenticationHeaders"/> 
                         <http:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]/transitions?expand=transitions.fields" method="GET" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions"/>
                         <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
                         <scripting:component doc:name="verify if issue can be closed">
@@ -163,9 +162,11 @@ json {
 
  return transitionId;]]></scripting:script>
                         </scripting:component>
+                        <set-variable variableName="transactionId" value="#[payload]" doc:name="transactionId"/>
                         <choice doc:name="Choice">
                             <when expression="#[payload != '']">
-                                <jira:progress-workflow-action connectionUser="#[json:jira.user]" connectionPassword="#[json:jira.password]" connectionAddress="#[json:jira.address]" actionIdString="#[payload]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira" config-ref=""/>
+						        <flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
+                                <jira:progress-workflow-action connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]" actionIdString="#[flowVars['transactionId']]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira" config-ref=""/>
                                 <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
                                     <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
                                 </jdbc-ee:outbound-endpoint>
@@ -183,8 +184,7 @@ json {
                 </choice>
             </when>
             <otherwise>
-                
-                <http:response-builder status="409" doc:name="HTTP Response Builder"/>
+                <set-payload value="false" doc:name="Set Payload"/>
             </otherwise>
          </choice>
          <catch-exception-strategy doc:name="Catch Exception Strategy">
@@ -194,12 +194,17 @@ json {
             <set-payload value="false" doc:name="Set Payload"/>
         </catch-exception-strategy>
     </flow>
+    <flow name="test-case-managerFlow1" doc:name="test-case-managerFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="closeJira" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"></cors:filter>
+        <flow-ref name="closeJiraManager" doc:name="Flow Reference"/>
+    </flow>
     <flow name="getJiraIssueState" doc:name="getJiraIssueState" processingStrategy="synchronous">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getIssueState" doc:name="HTTP"/>
+<!--         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getIssueState" doc:name="HTTP"/> -->
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-        <message-properties-transformer overwrite="true" doc:name="Set Jira Athorization Header">
-            <add-message-property key="Authorization" value="#['Basic ' + org.mule.util.Base64.encodeBytes(((String)'${jira.user}:${jira.password}').getBytes())]"/>
-        </message-properties-transformer>
+		<set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
+		<flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
+		<flow-ref name="setJiraAuthenticationHeaders" doc:name="Flow Reference setJiraAuthenticationHeaders"/> 
         <http:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions" method="GET"/>
         <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
     </flow>

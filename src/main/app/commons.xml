@@ -8,11 +8,11 @@
 	xmlns:cors="http://www.mulesoft.org/schema/mule/cors"
 	xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
 	xmlns:ss="http://www.springframework.org/schema/security"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
-http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
-http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd 
-http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd
 http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd
@@ -73,13 +73,13 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
 	
 	<flow name="getPluginConfig" doc:name="getPluginConfig">
     	<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getPluginConfig" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="getPluginConfig" value="CALL getPluginConfig(#[header:INBOUND:projectId], #[variable:pluginId])"/>
+            <jdbc-ee:query key="getPluginConfig" value="CALL getPluginConfig(#[variable:projectId], #[variable:pluginId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <custom-transformer class="com.mulesoft.tcm.model.PluginsSettingsTransformer" doc:name="Java"/>
     </flow>
     
-    <flow name="setJiraAuthenticationHeaders">
+    <flow name="setJiraAuthenticationHeaders" doc:name="setJiraAuthenticationHeaders">
     
     	<scripting:component doc:name="Groovy">
             <scripting:script engine="Groovy"><![CDATA[String credentials = payload.get('jira.user') + ':' + payload.get('jira.password')

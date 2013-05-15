@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="jira-plugin">
-    <flow SubFlow="false" name="jira-get-iterations" entity-id="6b4f03f3-01d2-4e36-9a3c-708370a81192">
+    <flow SubFlow="false" name="jira-get-iterations" entity-id="d14a1bed-0879-4436-be3b-bc8945fdddd9">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -26,18 +26,27 @@
                     <property value="3" name="auxiliary;index"/>
                 </properties>
             </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="projectId" entity-id="Variable#2">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="projectId" name="variableName"/>
+                    <property value="#[header:inbound:projectId]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="4" name="auxiliary;index"/>
+                </properties>
+            </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference getPluginConfig" entity-id="Flow Reference#2">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="getPluginConfig" name="name"/>
-                    <property value="4" name="auxiliary;index"/>
+                    <property value="5" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference setJiraAuthenticationHeaders" entity-id="Flow Reference#3">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="setJiraAuthenticationHeaders" name="name"/>
-                    <property value="5" name="auxiliary;index"/>
+                    <property value="6" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <endpoint message-exchange-pattern="RequestResponse" direction="Outbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#1">
@@ -65,25 +74,25 @@
                     <property name="user"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
-                    <property value="6" name="auxiliary;index"/>
+                    <property value="7" name="auxiliary;index"/>
                     <property name="connector-ref"/>
                 </properties>
             </endpoint>
             <pattern type="org.mule.tooling.ui.modules.core.pattern.echo" name="Echo" entity-id="Echo#1">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
-                    <property value="7" name="auxiliary;index"/>
+                    <property value="8" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="jira-get-issues" entity-id="e9169bb4-53d7-4df4-8c5f-906077617b5a">
+    <flow SubFlow="false" name="jira-get-issues" entity-id="ff87e080-f545-4ad8-8bbc-63273dd5aee0">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
-            <property value="8" name="auxiliary;index"/>
+            <property value="9" name="auxiliary;index"/>
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#2">
             <graphicalData height="0" width="0" y="0" x="0"/>
@@ -91,37 +100,46 @@
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="validate_api_key" name="name"/>
-                    <property value="9" name="auxiliary;index"/>
+                    <property value="10" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#1">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;sprint&quot;]]" name="value"/>
-                    <property value="10" name="auxiliary;index"/>
+                    <property value="11" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/regex-filter" name="Regex" entity-id="Regex#1">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="[0-9]" name="pattern"/>
-                    <property value="11" name="auxiliary;index"/>
+                    <property value="12" name="auxiliary;index"/>
                 </properties>
             </pattern>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable pluginId" entity-id="Variable#2">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable pluginId" entity-id="Variable#3">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="pluginId" name="variableName"/>
                     <property value="${jira.pluginId}" name="value"/>
                     <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
-                    <property value="12" name="auxiliary;index"/>
+                    <property value="13" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="projectId" entity-id="Variable#4">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="projectId" name="variableName"/>
+                    <property value="#[header:inbound:projectId]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="14" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#5">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="getPluginConfig" name="name"/>
-                    <property value="13" name="auxiliary;index"/>
+                    <property value="15" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/jira/jira-connector" name="Jira" entity-id="Jira#1">
@@ -135,7 +153,7 @@
                     <property value="100" name="maxNumResults"/>
                     <property value="#[payload.get('jira.address')]" name="connectionAddress"/>
                     <property value="" name="config-ref"/>
-                    <property value="14" name="auxiliary;index"/>
+                    <property value="16" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
