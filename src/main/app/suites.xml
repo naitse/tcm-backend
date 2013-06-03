@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc"
+	xmlns:cors="http://www.mulesoft.org/schema/mule/cors" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+    <flow name="getTcsForStuitesByProject" doc:name="getTcsForStuitesByProject">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getTcsForStuitesByProject" doc:name="getTcsForStuitesByProject"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+		<set-variable doc:name="projectId" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
+		<set-variable doc:name="label" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
+		<flow-ref name="subgetTcsForStuitesByProject" doc:name="Flow Reference"/>
+    </flow>
+    <flow name="subgetTcsForStuitesByProject" doc:name="subgetTcsForStuitesByProject" processingStrategy="synchronous">
+        <scripting:component doc:name="Groovy">
+            <scripting:script engine="Groovy"><![CDATA[def labels = flowVars['label'].split(',');
+def select = "Select id, name, description, proposed from (";
+
+for (i=0;i< labels.length; i++){
+	
+	select += "SELECT T.id, T.name, T.description, T.proposed from tcs T inner join tcs_suites TS on T.id = TS.tcId inner join projects_suites PS on PS.suiteId = TS.suiteId inner join suites S ON S.id = PS.suiteId where PS.projectId = "+flowVars['projectId']+" and T.carried_over = 0 and S.id = "+labels[i]
+	
+	if (i < (labels.length - 1)){
+		select += " UNION ALL "
+	}
+
+}
+
+select += ") AS tagsTempResult group by id, name, description, proposed;"
+
+return select;]]></scripting:script>
+        </scripting:component>
+        <logger message="Select id, name, description, proposed from #[payload]" level="INFO" doc:name="Logger"/>
+		
+       	<jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="test" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="test" value="CALL getTcsForStuitesByProject(#[payload])"/>
+            <jdbc-ee:query key="tagQuery" value="SELECT T.id, T.name, T.description, T.proposed  from tcs T inner join tcs_suites TS on T.id = TS.tcId inner join projects_suites PS on PS.suiteId = TS.suiteId inner join suites S ON S.id = PS.suiteId where PS.projectId = #[flowVars['projectId']]  and T.carried_over = 0 and S.id in (#[groovy:message.getInvocationProperty('label')]) group by T.id, T.name, T.description, T.proposed;"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        
+    </flow>
+    
+</mule>
