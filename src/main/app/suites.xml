@@ -20,15 +20,15 @@ http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mul
     <flow name="subgetTcsForStuitesByProject" doc:name="subgetTcsForStuitesByProject" processingStrategy="synchronous">
         <scripting:component doc:name="Groovy">
             <scripting:script engine="Groovy"><![CDATA[def labels = flowVars['label'].split(',');
-def select = "Select id, name, description, proposed from (";
+def select = "Select id tcId, name, description, proposed from (";
 
 for (i=0;i< labels.length; i++){
-	
-	select += "SELECT T.id, T.name, T.description, T.proposed from tcs T inner join tcs_suites TS on T.id = TS.tcId inner join projects_suites PS on PS.suiteId = TS.suiteId inner join suites S ON S.id = PS.suiteId where PS.projectId = "+flowVars['projectId']+" and T.carried_over = 0 and S.id = "+labels[i]
-	
-	if (i < (labels.length - 1)){
-		select += " UNION ALL "
-	}
+    
+    select += "SELECT T.id, T.name, T.description, T.proposed from tcs T inner join tcs_suites TS on T.id = TS.tcId inner join projects_suites PS on PS.suiteId = TS.suiteId inner join suites S ON S.id = PS.suiteId   where PS.projectId = "+flowVars['projectId']+" and T.carried_over = 0 and S.id = "+labels[i]
+    
+    if (i < (labels.length - 1)){
+        select += " UNION ALL "
+    }
 
 }
 
@@ -36,7 +36,7 @@ select += ") AS tagsTempResult group by id, name, description, proposed;"
 
 return select;]]></scripting:script>
         </scripting:component>
-        <logger message="Select id, name, description, proposed from #[payload]" level="INFO" doc:name="Logger"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
 		
        	<jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="test" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="test" value="CALL getTcsForStuitesByProject(#[payload])"/>
