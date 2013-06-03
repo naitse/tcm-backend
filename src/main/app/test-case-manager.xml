@@ -75,6 +75,7 @@ http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="monitoringETC" doc:name="HTTP"/>
         <cors:filter config-ref="tcm-cors"/>
         <flow-ref name="validate_api_key" doc:name="validate_api_key"/>
+        <set-variable variableName="projectId" value="#[header:inbound:projectId]" doc:name="projectId"/>
         <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
         <scripting:component doc:name="Groovy">
             <scripting:script engine="Groovy"><![CDATA[flowVars['toUpdate'] = new java.util.ArrayList();
@@ -307,7 +308,7 @@ json {
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSuites" doc:name="HTTP"/>
         <cors:filter config-ref="tcm-cors"/>
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-		<set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
+		<set-variable doc:name="projectId" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuites" queryTimeout="-1" connector-ref="Database" doc:name="Database">
 			<jdbc-ee:query key="getSuites" value="CALL getSuites(#[flowVars['projectId']])"/>
         </jdbc-ee:outbound-endpoint>
