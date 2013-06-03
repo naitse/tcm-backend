@@ -14,10 +14,6 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
 http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd">
-
-
-
-
 	
     <jdbc-ee:mysql-data-source name="MySQL_Data_Source" user="${db.user}" password="${db.password}" url="jdbc:mysql://${db.host}:3306/${db.database}" transactionIsolation="UNSPECIFIED" doc:name="MySQL Data Source"/>
     <jdbc-ee:connector name="Database" dataSource-ref="MySQL_Data_Source" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="Database"/>
@@ -352,4 +348,11 @@ json {
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
    </flow>
   
+   <flow name="getCarriedOverFeatures" doc:name="getDailyExecution">
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="metrics_getCarriedOverFeatures" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="metrics_getCarriedOverFeatures" value="CALL metrics_getCarriedOverFeatures()"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
 </mule>

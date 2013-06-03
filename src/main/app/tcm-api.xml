@@ -22,6 +22,10 @@
 		        	<representation mediaType="application/json" />
 		        	<retrieve flow-ref="getIterationsTrend"></retrieve>
 		        </document-resource>
+		        <document-resource name="metricGetCarriedOverFeatures">
+		        	<representation mediaType="application/json" />
+		        	<retrieve flow-ref="getCarriedOverFeatures"></retrieve>
+		        </document-resource>
 		        <document-resource name="features_iterations">
 		        	<representation mediaType="application/json" />
 		        	<retrieve flow-ref="getFeaturesIterations"></retrieve>

@@ -11,3 +11,5 @@ target/mvn-eclipse-cache.properties
 target/classes/test-case-manager.xml
 
 target/classes/tcm-api.xml
+
+.DS_Store
