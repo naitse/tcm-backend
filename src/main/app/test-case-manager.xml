@@ -268,50 +268,6 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
-    <flow name="getSuitesforTc" doc:name="getSuitesforTc">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSuitesforTc" doc:name="getSuitesforTc"/>
-        <cors:filter config-ref="tcm-cors"/>
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
-        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="getSuitesforTc" value="CALL getSuitesforTc(#[flowVars['tcId']])"/>
-        </jdbc-ee:outbound-endpoint>
-        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-    </flow>
-    <flow name="removeSuitesforTc" doc:name="removeSuitesforTc">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="removeSuitesforTc" doc:name="removeSuitesforTc"/>
-        <cors:filter config-ref="tcm-cors"/>
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
-        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="removeSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="removeSuitesforTc" value="CALL removeSuitesforTc(#[flowVars['tcId']],#[flowVars['label']])"/>
-        </jdbc-ee:outbound-endpoint>
-    </flow>
-    <flow name="insertSuitesforTc" doc:name="insertSuitesforTc">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="insertSuitesforTc" doc:name="insertSuitesforTc"/>
-        <cors:filter config-ref="tcm-cors"/>
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['tcId']]" variableName="tcId"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
-        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
-        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="removeSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="removeSuitesforTc" value="CALL insertNewTag(#[flowVars['tcId']],#[flowVars['label']],#[flowVars['projectId']])"/>
-        </jdbc-ee:outbound-endpoint>
-    </flow>
-    <flow name="getSuites" doc:name="getSuites" >
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSuites" doc:name="HTTP"/>
-        <cors:filter config-ref="tcm-cors"/>
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
-		<set-variable doc:name="projectId" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
-        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuites" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-			<jdbc-ee:query key="getSuites" value="CALL getSuites(#[flowVars['projectId']])"/>
-        </jdbc-ee:outbound-endpoint>
-        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
-    </flow>
-
     
     <flow name="createRequirement" doc:name="createRequirement">
     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
