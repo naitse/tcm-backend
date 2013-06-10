@@ -30,7 +30,7 @@
             <property value="MySQL_Data_Source" name="dataSource-ref to JDBC DataSource"/>
         </properties>
     </global-element>
-    <flow SubFlow="false" name="RlsIterations" entity-id="538db847-d836-4204-a023-0f75bbc5319f">
+    <flow SubFlow="false" name="RlsIterations" entity-id="988526ae-0a7a-4203-b4b0-0c4f60af16f5">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -107,7 +107,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="features_flow" entity-id="4db0a0c6-ac89-4b96-8cee-649039fa7027">
+    <flow SubFlow="false" name="features_flow" entity-id="c028de0e-5195-4873-98e3-85f474f396e7">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -161,7 +161,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="testcases_flow" entity-id="ed3a6753-a794-4a22-889a-00b24d149398">
+    <flow SubFlow="false" name="testcases_flow" entity-id="2f99fe5d-ac80-4d94-82ef-f99aaff4c8b4">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -215,7 +215,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="executedTestCases" entity-id="01aa225c-5dff-4bf5-93ab-5631af4b1a2c">
+    <flow SubFlow="false" name="executedTestCases" entity-id="8bce9d94-2731-4f80-b358-efe024f6e606">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -269,7 +269,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="closeAtDB" entity-id="a47b0070-4cdd-4dc0-876c-9e35cefcca00">
+    <flow SubFlow="false" name="closeAtDB" entity-id="762ed213-0f7c-413b-b2e2-842f25d414a7">
         <properties>
             <property value="synchronous" name="processingStrategy"/>
             <property value="synchronous" name="processingStrategy2"/>
@@ -289,20 +289,20 @@
             <splitter index="27" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#1">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
-                    <property-collection name="754813d1-29c4-4eb9-98bc-e592956a066a">
+                    <property-collection name="90c02ae0-084e-4bea-abb0-d6e4774f509b">
                         <property value="#[payload.fields.status.id == &quot;5&quot;]" name="choice.expression"/>
                         <property-collection name="choice.attributes">
                             <property value="#[payload.fields.status.id == &quot;5&quot;]" name="expression"/>
                         </property-collection>
                     </property-collection>
-                    <property-collection name="28889237-a6f4-48d8-800c-a357bda15e0e">
+                    <property-collection name="674aac89-31f7-49df-9df0-558dd774ad7a">
                         <property value="true" name="choice.otherwise"/>
                         <property-collection name="choice.attributes"/>
                     </property-collection>
                 </properties>
                 <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#2"/>
                 <compartment entity-id="compartment#1">
-                    <lane isChoiceOtherwiseLane="false" index="29" hadOnlyOneElement="false" entity-id="754813d1-29c4-4eb9-98bc-e592956a066a">
+                    <lane isChoiceOtherwiseLane="false" index="29" hadOnlyOneElement="false" entity-id="90c02ae0-084e-4bea-abb0-d6e4774f509b">
                         <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="closeIssue" entity-id="Database#6">
                             <graphicalData height="0" width="0" y="0" x="0"/>
                             <properties>
@@ -332,7 +332,7 @@
                             </properties>
                         </endpoint>
                     </lane>
-                    <lane isChoiceOtherwiseLane="true" index="32" hadOnlyOneElement="false" entity-id="28889237-a6f4-48d8-800c-a357bda15e0e">
+                    <lane isChoiceOtherwiseLane="true" index="32" hadOnlyOneElement="false" entity-id="674aac89-31f7-49df-9df0-558dd774ad7a">
                         <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#1">
                             <graphicalData height="0" width="0" y="0" x="0"/>
                             <properties>
@@ -347,7 +347,7 @@
             </splitter>
         </lane>
     </flow>
-    <flow SubFlow="false" name="monitoringExecutedtestcases" entity-id="5231489f-cb20-4ec8-9ff5-a9afdf0af242">
+    <flow SubFlow="false" name="monitoringExecutedtestcases" entity-id="1bca1d9c-0433-413d-b156-986772cb4274">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -547,7 +547,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="closeJiraManager" entity-id="7794dfe8-36c7-47e8-8e71-ee315491a715">
+    <flow SubFlow="false" name="closeJiraManager" entity-id="b03cbb8c-b518-4048-8c25-793f45cb6005">
         <properties>
             <property value="synchronous" name="processingStrategy"/>
             <property value="synchronous" name="processingStrategy2"/>
@@ -622,20 +622,20 @@
             <splitter index="59" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#3">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
-                    <property-collection name="9dd557bc-c5a4-4473-9a06-7f26968e45c1">
-                        <property value="true" name="choice.otherwise"/>
-                        <property-collection name="choice.attributes"/>
-                    </property-collection>
-                    <property-collection name="7c17e762-5514-4039-a926-582da9aa2ff5">
+                    <property-collection name="7a1dc566-9623-4ef0-b995-6fff7a3e79b9">
                         <property value="#[payload.resultset1[0].state == 2]" name="choice.expression"/>
                         <property-collection name="choice.attributes">
                             <property value="#[payload.resultset1[0].state == 2]" name="expression"/>
                         </property-collection>
                     </property-collection>
+                    <property-collection name="6b2be68e-0016-415f-94bb-dd4bf4a7202f">
+                        <property value="true" name="choice.otherwise"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
                 </properties>
                 <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#4"/>
                 <compartment entity-id="compartment#3">
-                    <lane isChoiceOtherwiseLane="false" index="61" hadOnlyOneElement="false" entity-id="7c17e762-5514-4039-a926-582da9aa2ff5">
+                    <lane isChoiceOtherwiseLane="false" index="61" hadOnlyOneElement="false" entity-id="7a1dc566-9623-4ef0-b995-6fff7a3e79b9">
                         <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="issueKey" entity-id="Variable#8">
                             <graphicalData height="0" width="0" y="0" x="0"/>
                             <properties>
@@ -655,20 +655,20 @@
                         <splitter index="63" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#5">
                             <graphicalData height="0" width="0" y="0" x="0"/>
                             <properties>
-<property-collection name="e9be8b16-2d1d-4a2d-b25b-31447f2285c9">
+<property-collection name="35164667-f7bc-44b1-8689-539081adf439">
+    <property value="true" name="choice.otherwise"/>
+    <property-collection name="choice.attributes"/>
+</property-collection>
+<property-collection name="0ebf422c-1c82-408a-9f48-b22fe4f60b40">
     <property value="#[payload.fields.status.id == &quot;5&quot;]" name="choice.expression"/>
     <property-collection name="choice.attributes">
         <property value="#[payload.fields.status.id == &quot;5&quot;]" name="expression"/>
     </property-collection>
 </property-collection>
-<property-collection name="26a2de12-5f93-4b6c-b96f-73c126a4b9ef">
-    <property value="true" name="choice.otherwise"/>
-    <property-collection name="choice.attributes"/>
-</property-collection>
                             </properties>
                             <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#6"/>
                             <compartment entity-id="compartment#4">
-<lane isChoiceOtherwiseLane="false" index="65" hadOnlyOneElement="false" entity-id="e9be8b16-2d1d-4a2d-b25b-31447f2285c9">
+<lane isChoiceOtherwiseLane="false" index="65" hadOnlyOneElement="false" entity-id="0ebf422c-1c82-408a-9f48-b22fe4f60b40">
     <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="closeIssue" entity-id="Database#9">
         <graphicalData height="0" width="0" y="0" x="0"/>
         <properties>
@@ -705,7 +705,7 @@
         </properties>
     </pattern>
 </lane>
-<lane isChoiceOtherwiseLane="true" index="69" hadOnlyOneElement="false" entity-id="26a2de12-5f93-4b6c-b96f-73c126a4b9ef">
+<lane isChoiceOtherwiseLane="true" index="69" hadOnlyOneElement="false" entity-id="35164667-f7bc-44b1-8689-539081adf439">
     <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="lockIssueAtDB" entity-id="Database#10">
         <graphicalData height="0" width="0" y="0" x="0"/>
         <properties>
@@ -819,20 +819,20 @@
     <splitter index="78" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#7">
         <graphicalData height="0" width="0" y="0" x="0"/>
         <properties>
-            <property-collection name="3b1197e3-80b1-4894-a9e3-badaf1f9a960">
-                <property value="true" name="choice.otherwise"/>
-                <property-collection name="choice.attributes"/>
-            </property-collection>
-            <property-collection name="9316758a-6c31-4e4b-ab51-75e1257c1128">
+            <property-collection name="32f2abbb-01bc-40a1-ba48-1eba962bd340">
                 <property value="#[payload != '']" name="choice.expression"/>
                 <property-collection name="choice.attributes">
                     <property value="#[payload != '']" name="expression"/>
                 </property-collection>
             </property-collection>
+            <property-collection name="ebed7073-22b7-4006-89ce-549d717d16fc">
+                <property value="true" name="choice.otherwise"/>
+                <property-collection name="choice.attributes"/>
+            </property-collection>
         </properties>
         <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#8"/>
         <compartment entity-id="compartment#5">
-            <lane isChoiceOtherwiseLane="false" index="80" hadOnlyOneElement="false" entity-id="9316758a-6c31-4e4b-ab51-75e1257c1128">
+            <lane isChoiceOtherwiseLane="false" index="80" hadOnlyOneElement="false" entity-id="32f2abbb-01bc-40a1-ba48-1eba962bd340">
                 <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference getPluginConfig" entity-id="Flow Reference#12">
                     <graphicalData height="0" width="0" y="0" x="0"/>
                     <properties>
@@ -890,7 +890,7 @@
                     </properties>
                 </pattern>
             </lane>
-            <lane isChoiceOtherwiseLane="true" index="86" hadOnlyOneElement="false" entity-id="3b1197e3-80b1-4894-a9e3-badaf1f9a960">
+            <lane isChoiceOtherwiseLane="true" index="86" hadOnlyOneElement="false" entity-id="ebed7073-22b7-4006-89ce-549d717d16fc">
                 <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="unlockIssueAtDB" entity-id="Database#12">
                     <graphicalData height="0" width="0" y="0" x="0"/>
                     <properties>
@@ -942,7 +942,7 @@
                             </compartment>
                         </splitter>
                     </lane>
-                    <lane isChoiceOtherwiseLane="true" index="91" hadOnlyOneElement="false" entity-id="9dd557bc-c5a4-4473-9a06-7f26968e45c1">
+                    <lane isChoiceOtherwiseLane="true" index="91" hadOnlyOneElement="false" entity-id="6b2be68e-0016-415f-94bb-dd4bf4a7202f">
                         <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#10">
                             <graphicalData height="0" width="0" y="0" x="0"/>
                             <properties>
@@ -1002,7 +1002,7 @@
             </scope>
         </lane>
     </flow>
-    <flow SubFlow="false" name="test-case-managerFlow1" entity-id="80c5e40a-b707-410b-89e9-2add41eb5d5a">
+    <flow SubFlow="false" name="test-case-managerFlow1" entity-id="b9d34c4e-6e79-45dd-86fb-be397f721112">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1054,7 +1054,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getJiraIssueState" entity-id="b7897eaa-4f3a-4c01-baf7-3b84d010f435">
+    <flow SubFlow="false" name="getJiraIssueState" entity-id="8e56a1b0-db88-4406-9d20-a2a07131c2d0">
         <properties>
             <property value="synchronous" name="processingStrategy"/>
             <property value="synchronous" name="processingStrategy2"/>
@@ -1136,7 +1136,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="createTestCase" entity-id="14a72d2a-f4f1-4b0f-8f85-1f39b129ff21">
+    <flow SubFlow="false" name="createTestCase" entity-id="0b845f17-b1ef-4404-922f-6178e3b926d1">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1195,7 +1195,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="updateTestCase" entity-id="9a7f81f8-a527-455f-a062-e3b9cf20975f">
+    <flow SubFlow="false" name="updateTestCase" entity-id="7434af46-cadc-47a6-85bc-6a53b03c1b18">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1242,7 +1242,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="deleteTestCase" entity-id="b6ace4a9-4ef1-4eaf-9bf8-a959b86e65d5">
+    <flow SubFlow="false" name="deleteTestCase" entity-id="0a5cee3f-c83a-485e-9e1a-a942d22a3c2a">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1289,7 +1289,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="updateTestCaseStatus" entity-id="de4f9e72-58a8-4875-bdb1-23db01da6bcf">
+    <flow SubFlow="false" name="updateTestCaseStatus" entity-id="342d2ab5-7fd3-4fb8-b73f-53d8f2874731">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1327,7 +1327,7 @@
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL updateTCStatus(#[variable:testcasesMemberId], #[json:statusId])" name="value"/>
+                        <property value="CALL updateTCStatus(#[variable:testcasesMemberId], #[json:statusId], #[json:actualResult])" name="value"/>
                         <property value="updateTC" name="key"/>
                         <property value="123" name="auxiliary;index"/>
                         <property value="123" name="auxiliary;wrapIn"/>
@@ -1336,7 +1336,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getPlan" entity-id="f89044fa-0c37-4667-98d8-95d2240261b0">
+    <flow SubFlow="false" name="getPlan" entity-id="13886fa0-6512-41c3-8e93-67fe9b3832f1">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1401,7 +1401,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getMetric-executed" entity-id="a4aa08e3-cdc7-4a55-b442-e66cacdad976">
+    <flow SubFlow="false" name="getMetric-executed" entity-id="336f35eb-095a-4b06-9427-fd0d24d08964">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1455,7 +1455,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getDailyExecution" entity-id="e7b52819-bb42-4dfa-90c0-f2915696334e">
+    <flow SubFlow="false" name="getDailyExecution" entity-id="2aa258da-ac58-45f2-992c-2e579674f7f2">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1509,7 +1509,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getIterationsTrend" entity-id="e5c0f811-fa84-4b88-9bb4-04d7056731ce">
+    <flow SubFlow="false" name="getIterationsTrend" entity-id="3f80bdf2-0a56-4411-935d-96cabb784588">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1547,7 +1547,7 @@
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL metrics_iterationsTrend()" name="value"/>
+                        <property value="CALL metrics_iterationsTrend(#[header:INBOUND:projectId])" name="value"/>
                         <property value="getIterationsTrend" name="key"/>
                         <property value="143" name="auxiliary;index"/>
                         <property value="143" name="auxiliary;wrapIn"/>
@@ -1563,7 +1563,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="createRequirement" entity-id="5dcd9686-735d-4552-ae53-59f88705cff7">
+    <flow SubFlow="false" name="createRequirement" entity-id="4490769e-983e-43fe-a904-08b2f5f57ea6">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1610,7 +1610,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="createRelease" entity-id="b254a334-1656-4801-8d37-6acaba8595fb">
+    <flow SubFlow="false" name="createRelease" entity-id="0aeb4057-f780-441b-9664-32b7baccfac0">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1666,7 +1666,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="createIteration" entity-id="bec5f206-5177-4fd4-931c-a39fd8178bdc">
+    <flow SubFlow="false" name="createIteration" entity-id="4873bf72-3026-4fea-abef-09f0d42c018a">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1722,7 +1722,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getUserProjects" entity-id="654358fb-5726-4f53-8b15-30a2e78d6bd1">
+    <flow SubFlow="false" name="getUserProjects" entity-id="05e921aa-2a1f-449d-b201-1eba965b93ed">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1776,7 +1776,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getFeaturesIterations" entity-id="48298053-945f-46f9-be4b-15acb60df393">
+    <flow SubFlow="false" name="getFeaturesIterations" entity-id="0b4084b0-428a-4f3c-a20d-820f0bfb372b">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1830,7 +1830,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getCarriedOverFeatures" entity-id="f0315515-0375-42d2-84a2-73d52d4de447">
+    <flow SubFlow="false" name="getCarriedOverFeatures" entity-id="80e7baf5-c845-4835-8275-90fd3718ea9a">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -1868,7 +1868,7 @@
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL metrics_getCarriedOverFeatures()" name="value"/>
+                        <property value="CALL metrics_getCarriedOverFeatures(#[header:INBOUND:projectId])" name="value"/>
                         <property value="metrics_getCarriedOverFeatures" name="key"/>
                         <property value="172" name="auxiliary;index"/>
                         <property value="172" name="auxiliary;wrapIn"/>
