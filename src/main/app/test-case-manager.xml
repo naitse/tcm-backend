@@ -30,6 +30,15 @@ http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/
          
     </flow>
     
+    <flow name="getReleases" doc:name="getReleases">
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getReleases" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getReleases" value="CALL getReleases(#[header:INBOUND:projectId])"/>
+         </jdbc-ee:outbound-endpoint>
+         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+         
+    </flow>
+    
     <flow name="features_flow" doc:name="features_flow">
     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>        
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getFeatures" queryTimeout="-1" connector-ref="Database" doc:name="Database">
@@ -81,10 +90,17 @@ return payload;]]></scripting:script>
             <set-variable variableName="featureId" value="#[payload.featureId]" doc:name="featureId"/>
             <set-variable variableName="issueKey" value="#[payload.issueKey]" doc:name="issueKey"/>
             <set-variable variableName="states" value="#[payload.states]" doc:name="states"/>
-            <flow-ref name="closeAtDB" doc:name="closeAtDB"/>
-	        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTcsRunned" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-	            <jdbc-ee:query key="getTcsRunned" value="CALL monitoringExecutedTestCases(#[variable:featureId])"/>
-	        </jdbc-ee:outbound-endpoint>
+            <choice doc:name="Choice">
+                <when expression="#[flowVars['issueKey'] != 'N0k31']">
+                    <flow-ref name="closeAtDB" doc:name="closeAtDB"/>
+                </when>
+                <otherwise>
+                    <logger message="no jiraKey found" level="DEBUG" doc:name="Logger"/>
+                </otherwise>
+            </choice>
+            <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTcsRunned" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+                <jdbc-ee:query key="getTcsRunned" value="CALL monitoringExecutedTestCases(#[variable:featureId])"/>
+            </jdbc-ee:outbound-endpoint>
             <set-payload value="#[payload.resultset1.get(0)]" doc:name="Set Payload"/>
             <scripting:component doc:name="Groovy">
                 <scripting:script engine="Groovy"><![CDATA[import groovy.json.*
@@ -274,7 +290,20 @@ json {
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createReq" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="createReq" value="CALL createFeature(#[variable:iterationsMemberId], #[json:key], #[json:summary], #[json:desc])"/>
         </jdbc-ee:outbound-endpoint>
+        <set-variable value="#[payload.resultset1.get(0).featureId]" variableName="featuresMemberId" doc:name="Variable" />
+        <logger message="NEW FEATURE #[flowVars['featuresMemberId']]" level="INFO" doc:name="Logger"/>
    </flow>
+   
+   <flow name="deleteFeature" doc:name="deleteFeature">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="deleteFeature" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="deleteFeature" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="deleteFeature" value="CALL deleteFeature(#[message.inboundProperties['http.query.params']['featureId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="true" doc:name="Set Payload"/>
+   </flow>
+   
    <flow name="createRelease" doc:name="createRelease">
    		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="createRls" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
@@ -311,4 +340,27 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
+    
+    <flow name="saveProjectConfig" doc:name="saveProjectConfig" >
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="saveProjectConfig" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="saveProjectConfig" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+			<jdbc-ee:query key="saveProjectConfig" value="CALL saveProjectConfig(#[json:configId], #[json:springIterations], #[json:iterationDuration],#[json:bugurl], #[header:INBOUND:projectId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    
+    <flow name="getProjectConfig" doc:name="getProjectConfig" >
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getProjectConfig" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getProjectConfig" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+			<jdbc-ee:query key="getProjectConfig" value="CALL getProjectConfig(#[header:INBOUND:projectId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    
 </mule>

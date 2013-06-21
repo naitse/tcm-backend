@@ -10,9 +10,12 @@
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	
 	<interface name="tcmInterface">
-	       
+      	<document-resource name="releases_iterations">
+        	<representation mediaType="application/json" />
+        	<retrieve flow-ref="RlsIterations"></retrieve>
+        </document-resource>
         <collection-resource name="releases">
-        	<retrieve flow-ref="RlsIterations">
+        	<retrieve flow-ref="getReleases">
            		<representation mediaType="application/json" />
            	</retrieve>
         	<member>

@@ -109,10 +109,31 @@ return select;]]></scripting:script>
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
 		<set-variable doc:name="projectId" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuites" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-			<jdbc-ee:query key="getSuites" value="CALL getSuites(#[flowVars['projectId']])"/>
+			<jdbc-ee:query key="getSuites" value="CALL getSuites(#[flowVars['projectId']], #[message.inboundProperties['http.query.params']['interop']])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+        <flow name="createTestCaseForSuite" doc:name="createTestCaseForSuite" >
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="createTestCaseForSuite" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+		<set-variable doc:name="suiteId" value="#[message.inboundProperties['http.query.params']['suiteId']]" variableName="suiteId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="createTestCaseForSuite" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+			<jdbc-ee:query key="createTestCaseForSuite" value="CALL createTestCaseForSuite(#[variable:suiteId], #[json:name], #[json:description], #[json:proposed])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    
+    <flow name="deleteTestCaseSuite" doc:name="deleteTestCaseSuite">
+    	<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="deleteTestCaseSuite" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="deleteTestCaseSuite" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="deleteTestCaseSuite" value="CALL deleteTestCase(#[message.inboundProperties['http.query.params']['tcId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="true" doc:name="Set Payload"/>
     </flow>
     
 </mule>
