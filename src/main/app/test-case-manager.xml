@@ -92,7 +92,14 @@ return payload;]]></scripting:script>
             <set-variable variableName="states" value="#[payload.states]" doc:name="states"/>
             <choice doc:name="Choice">
                 <when expression="#[flowVars['issueKey'] != 'N0k31']">
-                    <flow-ref name="closeAtDB" doc:name="closeAtDB"/>
+                    <choice doc:name="Choice">
+                        <when expression="#[flowVars['issueKey'] != 'suite']">
+                            <flow-ref name="closeAtDB" doc:name="closeAtDB"/>
+                        </when>
+                        <otherwise>
+                            <logger message="porqueria" level="TRACE" doc:name="Logger"/>
+                        </otherwise>
+                    </choice>
                 </when>
                 <otherwise>
                     <logger message="no jiraKey found" level="DEBUG" doc:name="Logger"/>
@@ -252,7 +259,6 @@ json {
     </flow>
     
      <flow name="getPlan" doc:name="getPlan">
-     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getPlan" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getPlan" value="CALL getPlan(#[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
@@ -262,15 +268,23 @@ json {
     </flow>
    
      <flow name="getMetric-executed" doc:name="getMetric-executed">
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--         <flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getMetric-executed" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getMetric-executed" value="CALL metrics_executed(#[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
-    
+   <flow name="ris" doc:name="ris">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="ris" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="ris" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="ris" value="CALL getInProgressTCbyIterId(#[message.inboundProperties['http.query.params']['iterationId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer />
+   </flow>    
     <flow name="getDailyExecution" doc:name="getDailyExecution">
-    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getDailyExecution" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getDailyExecution" value="CALL metrics_dailyExecution(#[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
@@ -301,6 +315,18 @@ json {
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="deleteFeature" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="deleteFeature" value="CALL deleteFeature(#[message.inboundProperties['http.query.params']['featureId']])"/>
         </jdbc-ee:outbound-endpoint>
+        <set-payload value="true" doc:name="Set Payload"/>
+   </flow>
+   
+   <flow name="instanceSuite" doc:name="instanceSuite">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="instanceSuite" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="instanceSuite" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="instanceSuite" value="CALL instanceSuite(#[json:iterationId],#[json:suiteId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-variable value="#[payload.resultset1.get(0).featureId]" variableName="featuresMemberId" doc:name="Variable" />
+        <logger message="NEW FEATURE #[flowVars['featuresMemberId']]" level="INFO" doc:name="Logger"/>
         <set-payload value="true" doc:name="Set Payload"/>
    </flow>
    
