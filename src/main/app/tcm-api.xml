@@ -108,6 +108,13 @@
 	        </document-resource>
         </document-resource>
 		
+		<collection-resource name="plugins">
+        	<retrieve flow-ref="getPlugins">
+           		<representation mediaType="application/json" />
+           	</retrieve>
+           	<member>
+           	</member>
+        </collection-resource>
 	</interface>
 	<service name="myService" interface-ref="tcmInterface">
 		<http:inbound-endpoint port="${http.port}" host="localhost" path="api">

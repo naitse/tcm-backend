@@ -79,6 +79,14 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
         <custom-transformer class="com.mulesoft.tcm.model.PluginsSettingsTransformer" doc:name="Java"/>
     </flow>
     
+    <flow name="getPlugins" doc:name="getPlugins">
+    	<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getPlugins" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getPlugins" value="CALL getPlugins(#[header:inbound:projectId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <custom-transformer class="com.mulesoft.tcm.model.PluginsTransformer" doc:name="Java"/>        
+    </flow>   
+    
     <flow name="setJiraAuthenticationHeaders" doc:name="setJiraAuthenticationHeaders">
     
     	<scripting:component doc:name="Groovy">
