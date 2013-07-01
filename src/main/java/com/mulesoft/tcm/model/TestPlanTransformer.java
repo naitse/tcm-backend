@@ -22,10 +22,10 @@ public class TestPlanTransformer extends AbstractMessageAwareTransformer{
 		
 		for(CaseInsensitiveHashMap row: records){
 			
-			if(!coverage.isEmpty() && containsIssue(coverage, (String) row.get("jiraKey")) )
+			if(!coverage.isEmpty() && containsIssue(coverage, (String) row.get("FtrName")) )
 			{
 				for(FeatureCoverage ftr: coverage){
-					if(ftr.jiraKey.contains( (String)row.get("jiraKey"))){
+					if(ftr.name.contains( (String)row.get("FtrName"))){
 						
 						TestCase tc = new TestCase();
 						tc.id = (Integer) row.get("id");
@@ -60,11 +60,11 @@ public class TestPlanTransformer extends AbstractMessageAwareTransformer{
 		return coverage;
 	}
 
-	private boolean containsIssue(ArrayList<FeatureCoverage> coverage, String jirakey) {
+	private boolean containsIssue(ArrayList<FeatureCoverage> coverage, String name) {
 		boolean bret = false;
 		
 		for(FeatureCoverage ftr: coverage){
-			if(ftr.jiraKey.contains(jirakey)){
+			if(ftr.name.contains(name)){
 				bret = true;
 			}
 		}
