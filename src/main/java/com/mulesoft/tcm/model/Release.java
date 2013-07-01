@@ -1,5 +1,6 @@
 package com.mulesoft.tcm.model;
 
+import java.util.Date;
 import java.util.List;
 
 public class Release {
@@ -7,6 +8,8 @@ public class Release {
 	
 	public int id;
 	public String name;
+	public Date start;
+	public Date end;
 	public List<Iteration> iterations;
 	
 	int getId() {
@@ -19,6 +22,22 @@ public class Release {
 	
 	String getName() {
 		return name;
+	}
+	
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
 	}
 	
 	void setName(String name) {

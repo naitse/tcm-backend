@@ -1,6 +1,7 @@
 package com.mulesoft.tcm.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.mule.api.MuleMessage;
@@ -42,6 +43,8 @@ public class ReleasesTransformer extends AbstractMessageAwareTransformer{
 				release = new Release();
 				release.setId((Integer)row.get("id"));
 				release.setName((String)row.get("releaseName"));
+				release.setStart((Date)row.get("rstart"));
+				release.setEnd((Date)row.get("rend"));
 				
 				iterations = new ArrayList<Iteration>();
 				

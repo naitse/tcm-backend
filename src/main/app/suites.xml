@@ -136,4 +136,16 @@ return select;]]></scripting:script>
         <set-payload value="true" doc:name="Set Payload"/>
     </flow>
     
+    <flow name="instanceSuite" doc:name="instanceSuite">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="instanceSuite" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="instanceSuite" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="instanceSuite" value="CALL instanceSuite(#[json:iterationId],#[json:suiteId])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-variable value="#[payload.resultset1.get(0).featureId]" variableName="featuresMemberId" doc:name="Variable" />
+        <logger message="NEW FEATURE #[flowVars['featuresMemberId']]" level="INFO" doc:name="Logger"/>
+        <set-payload value="true" doc:name="Set Payload"/>
+   </flow>
+    
 </mule>
