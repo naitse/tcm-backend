@@ -26,7 +26,6 @@ public class PluginsTransformer extends AbstractMessageAwareTransformer{
 				pluginToAdd = new Plugin();
 				pluginToAdd.setId(currentId);
 				pluginToAdd.setName((String)row.get("name") );
-				pluginToAdd.setEnabled((Boolean)row.get("enabled"));
 				plugins.add(pluginToAdd);
 				
 			}

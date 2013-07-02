@@ -113,6 +113,7 @@
            		<representation mediaType="application/json" />
            	</retrieve>
            	<member>
+           		<update flow-ref="savePluginsData"/>
            	</member>
         </collection-resource>
 	</interface>
