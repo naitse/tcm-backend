@@ -303,7 +303,7 @@ json {
     <flow name="getIterationsTrend" doc:name="getIterationsTrend">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getIterationsTrend" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="getIterationsTrend" value="CALL metrics_iterationsTrend(#[header:INBOUND:projectId])"/>
+            <jdbc-ee:query key="getIterationsTrend" value="CALL metrics_iterationsTrend(#[variable:releasesMemberId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
@@ -402,7 +402,7 @@ json {
    <flow name="getCarriedOverFeatures" doc:name="getCarriedOverFeatures">
     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="metrics_getCarriedOverFeatures" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="metrics_getCarriedOverFeatures" value="CALL metrics_getCarriedOverFeatures(#[header:INBOUND:projectId])"/>
+            <jdbc-ee:query key="metrics_getCarriedOverFeatures" value="CALL metrics_getCarriedOverFeatures(#[variable:releasesMemberId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
