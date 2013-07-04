@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ss="http://www.springframework.org/schema/security"
+<mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:ss="http://www.springframework.org/schema/security"
       xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
       xmlns:api-key="http://www.mulesoft.org/schema/mule/api-key" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:jira="http://www.mulesoft.org/schema/mule/jira" xmlns:cors="http://www.mulesoft.org/schema/mule/cors" xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
@@ -13,10 +13,18 @@ http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd">
+http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
 	
     <jdbc-ee:mysql-data-source name="MySQL_Data_Source" user="${db.user}" password="${db.password}" url="jdbc:mysql://${db.host}:3306/${db.database}" transactionIsolation="UNSPECIFIED" doc:name="MySQL Data Source"/>
     <jdbc-ee:connector name="Database" dataSource-ref="MySQL_Data_Source" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="Database"/>
+    <jira:config name="Jira" doc:name="Jira">
+        <jira:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </jira:config>
+    <jira:config name="Jira1" doc:name="Jira">
+        <jira:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </jira:config>
+    <http:connector name="HTTP_HTTPS" cookieSpec="netscape" validateConnections="true" sendBufferSize="0" receiveBufferSize="0" receiveBacklog="0" clientSoTimeout="10000" serverSoTimeout="10000" socketSoLinger="0" doc:name="HTTP\HTTPS"/>
     
    
     <flow name="RlsIterations" doc:name="RlsIterations">
@@ -224,8 +232,11 @@ json {
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
 		<set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
 		<flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
-		<flow-ref name="setJiraAuthenticationHeaders" doc:name="Flow Reference setJiraAuthenticationHeaders"/> 
-        <http:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions" method="GET"/>
+        <set-variable variableName="user" value="#[payload.get('jira.user')]" doc:name="user"/>
+        <set-variable variableName="pass" value="#[payload.get('jira.password')]" doc:name="pass"/>
+		<custom-transformer class="com.mulesoft.tcm.utils.GetJiraIssueInfo" doc:name="Java"/>
+<!--         <jira:get-issues-from-jql-search connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" doc:name="Jira" connectionAddress="https://www.mulesoft.org/jira/rpc/soap/jirasoapservice-v2" jqlSearch="issueKey = ION-2565" maxNumResults="1000" config-ref="Jira1"/> -->
+<!--         <https:outbound-endpoint exchange-pattern="request-response" host="www.mulesoft.org" port="80" path="jira/rest/api/2/issue/#[flowVars[&quot;issueKey&quot;]]" disableTransportTransformer="true" contentType="application/json" doc:name="get issue transitions" method="GET" connector-ref="HTTP_HTTPS"/> -->
         <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
     </flow>
     

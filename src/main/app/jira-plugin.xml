@@ -16,8 +16,10 @@ http://www.mulesoft.org/schema/mule/jira http://www.mulesoft.org/schema/mule/jir
      	<set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
      	<set-variable variableName="projectId" value="#[header:inbound:projectId]" doc:name="projectId"/>
         <flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
-        <flow-ref name="setJiraAuthenticationHeaders" doc:name="Flow Reference setJiraAuthenticationHeaders"/>        
-        <http:outbound-endpoint exchange-pattern="request-response" disableTransportTransformer="true" contentType="application/json"  doc:name="HTTP" host="www.mulesoft.org" path="#[payload.get('jira.greenhopper')]" port="80" method="GET"/>
+        <set-variable variableName="user" value="#[payload.get('jira.user')]" doc:name="user"/>
+        <set-variable variableName="pass" value="#[payload.get('jira.password')]" doc:name="pass"/>
+        <set-variable variableName="greenhopper" value="#[payload.get('jira.greenhopper')]" doc:name="greenhopper"/>
+		<custom-transformer class="com.mulesoft.tcm.utils.GetJiraIssuesFromSprint" doc:name="Java"/>
         <echo-component doc:name="Echo"/>
     </flow>
 
