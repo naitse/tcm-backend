@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
 	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
 	xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc"
@@ -17,7 +17,8 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/api-key http://www.mulesoft.org/schema/mule/api-key/1.0/mule-api-key.xsd
 http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd">
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
 	<api-key:config signatureRequired="false" name="simpleConfig" persistentDefaultStore="true"/>
 	
 	<cors:config name="tcm-cors" allowGenericHttpRequests="true" allowAnyOrigin="true" supportsCredentials="false">
@@ -89,8 +90,8 @@ http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/sche
     
     <flow name="savePluginsData" doc:name="savePluginsData">
     	<set-variable value="#[header:inbound:projectId]" variableName="projectId" doc:name="Variable" />
-    	<set-payload value="#[json:properties]" />
-    	<json:json-to-object-transformer returnClass="java.util.Map" />
+    	<set-payload value="#[json:properties]" doc:name="Set Payload"/>
+    	<json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
         <foreach doc:name="For Each" collection="#[payload]">
         	<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="savePluginsData" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
 	            <jdbc-ee:query key="savePluginsData" value="CALL savePluginData(#[variable:projectId], #[variable:pluginsMemberId],#[variable:key], #[payload] )"/>
@@ -125,6 +126,37 @@ return originalPayload;]]></scripting:script>
         </http:inbound-endpoint>
         <api-key:register config-ref="simpleConfig"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    
+    <flow name="commonsFlow2" doc:name="commonsFlow2">
+        
+        <poll frequency="30000" doc:name="Poll">
+        	<processor-chain doc:name="Processor Chain">
+		         <jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getNotifications" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+		            <jdbc-ee:query key="getNotifications" value="CALL getNotifications()"/>
+		        </jdbc-ee:outbound-endpoint>
+        	</processor-chain>   
+        </poll>
+       
+        <set-variable value="#[payload.resultset1]" variableName="UsersNotifications" doc:name="Variable" />
+        <foreach doc:name="For Each" collection="#[variable:UsersNotifications]">
+        	<set-variable value="#[payload]" variableName="UserNotification" doc:name="Variable" />
+        	<set-variable value='#[payload.get("notificationId")]' variableName="notifId" doc:name="Variable" />
+        	<set-variable value='#[payload.get("id")]' variableName="userId" doc:name="Variable" />
+        	<component class="com.mulesoft.pusher.PusherChannelInfo" doc:name="Java"/>
+        	<byte-array-to-string-transformer doc:name="Byte Array to String"/>
+            <choice doc:name="Choice">
+                <when expression="#[payload.contains(&quot;{\&quot;occupied\&quot;:true}&quot;)]">
+                    <component class="com.mulesoft.pusher.PusherTrigger" doc:name="Java"/>
+                    <jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="setNotificationAsRead" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+                        <jdbc-ee:query key="setNotificationAsRead" value="CALL setNotificationAsRead(#[variable:userId], #[variable:notifId])"/>
+        			</jdbc-ee:outbound-endpoint>
+                </when>
+                <otherwise>
+                    <logger message="No notifications found" level="DEBUG"/>
+                </otherwise>
+            </choice>
+        </foreach>
     </flow>
     
 </mule>
