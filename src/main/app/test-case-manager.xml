@@ -57,6 +57,9 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     
     <flow name="testcases_flow" doc:name="testcases_flow">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable value="#[variable:featuresMemberId]" variableName="itemId" doc:name="itemId" />
+        <set-variable value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;userName&quot;]]" variableName="userName" doc:name="userName" />
+        <component class="com.mulesoft.pusher.PusherTriggerInUseBy" doc:name="Java"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTCs" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getTCs" value="CALL getTestCasesByFeature(#[variable:featuresMemberId])"/>
         </jdbc-ee:outbound-endpoint>
@@ -298,7 +301,7 @@ json {
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getFBTCS" doc:name="HTTP"/>
         <cors:filter config-ref="tcm-cors"/>
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getFBTCS" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="getFBTCS" value="CALL getfailblockTCbyIterId(#[message.inboundProperties['http.query.params']['iterationId']])"/>
+            <jdbc-ee:query key="getFBTCS" value="CALL getfailblockTCbyIterId(#[message.inboundProperties['http.query.params']['iterationId']],#[message.inboundProperties['http.query.params']['statusId']])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>

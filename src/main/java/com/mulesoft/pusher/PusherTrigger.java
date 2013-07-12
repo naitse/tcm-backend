@@ -1,18 +1,5 @@
 package com.mulesoft.pusher;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.mortbay.log.Log;
 import org.mule.api.MuleEventContext;
 import org.mule.util.CaseInsensitiveHashMap;
 
