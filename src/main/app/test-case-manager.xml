@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     
    
     <flow name="RlsIterations" doc:name="RlsIterations">
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--         <flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getReleasesIterations" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getReleasesIterations" value="CALL getReleasesIterations(#[header:INBOUND:projectId])"/>
          </jdbc-ee:outbound-endpoint>
@@ -48,7 +48,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     
     <flow name="features_flow" doc:name="features_flow">
-    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>        
+<!--     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>         -->
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getFeatures" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getFeatures" value="CALL getFeatures( #[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
@@ -197,7 +197,7 @@ json {
                         <choice doc:name="Choice">
                             <when expression="#[payload != '']">
 						        <flow-ref name="getPluginConfig" doc:name="Flow Reference getPluginConfig"/>
-                                <jira:progress-workflow-action connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]" actionIdString="#[flowVars['transactionId']]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira" config-ref=""/>
+                                <jira:progress-workflow-action connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]" actionIdString="#[flowVars['transactionId']]" issueKey="#[flowVars[&quot;issueKey&quot;]]" doc:name="Jira" config-ref="Jira"/>
                                 <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="closeIssue" queryTimeout="-1" connector-ref="Database" doc:name="closeIssue">
                                     <jdbc-ee:query key="closeIssue" value="CALL closeIssue(#[flowVars[&quot;featureId&quot;]])"/>
                                 </jdbc-ee:outbound-endpoint>
@@ -288,6 +288,16 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
     </flow>
+         <flow name="metricsExecutedFeature" doc:name="metricsExecutedFeature">
+<!--         <flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="metricsExecutedFeature" doc:name="HTTP"/>
+		<cors:filter config-ref="tcm-cors"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getMetric-executed" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getMetric-executed" value="CALL metrics_executed_by_feature(#[message.inboundProperties['http.query.params']['featureId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
    <flow name="ris" doc:name="ris">
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="ris" doc:name="HTTP"/>
         <cors:filter config-ref="tcm-cors"/>
@@ -305,6 +315,15 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
+   </flow> 
+         <flow name="getTcStatusByFeature" doc:name="getTcStatusByFeature">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getTcStatusByFeature" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getFBTCS" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getFBTCS" value="CALL getTcStatusByFeature(#[message.inboundProperties['http.query.params']['featureId']],#[message.inboundProperties['http.query.params']['statusId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
    </flow>     
     <flow name="getDailyExecution" doc:name="getDailyExecution">
 <!--     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
@@ -315,7 +334,7 @@ json {
     </flow>
     
     <flow name="getIterationsTrend" doc:name="getIterationsTrend">
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+    <cors:filter config-ref="tcm-cors"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getIterationsTrend" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getIterationsTrend" value="CALL metrics_iterationsTrend(#[variable:releasesMemberId])"/>
         </jdbc-ee:outbound-endpoint>

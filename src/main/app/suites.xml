@@ -91,6 +91,28 @@ return select;]]></scripting:script>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
+        <flow name="addSubSuite" doc:name="addSubSuite">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="addSubSuite" doc:name="addSuite"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['label']]" variableName="label"/>
+        <set-variable doc:name="Variable" value="#[message.inboundProperties['http.query.params']['projectId']]" variableName="projectId"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="addSuite" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="addSuite" value="CALL addSubSuite(#[flowVars['label']],#[flowVars['projectId']],#[message.inboundProperties['http.query.params']['parentId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+        <flow name="getSubSuite" doc:name="getSubSuite">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getSubSuite" doc:name="getSuitesforTc"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getSuitesforTc" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getSuitesforTc" value="CALL getSubSuite(#[message.inboundProperties['http.query.params']['parentId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
     <flow name="removeSuite" doc:name="removeSuite">
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="removeSuite" doc:name="addSuite"/>
         <cors:filter config-ref="tcm-cors"/>

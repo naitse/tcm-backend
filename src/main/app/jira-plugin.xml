@@ -30,7 +30,7 @@ http://www.mulesoft.org/schema/mule/jira http://www.mulesoft.org/schema/mule/jir
         <set-variable value="${jira.pluginId}" variableName="pluginId" doc:name="Variable pluginId" />
         <set-variable variableName="projectId" value="#[header:inbound:projectId]" doc:name="projectId"/>
         <flow-ref name="getPluginConfig" doc:name="Flow Reference"/>        
-        <jira:get-issues-from-jql-search  connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]"  doc:name="Jira" jqlSearch="project = #[payload.get('jira.project')] and sprint in (#[message.inboundProperties['http.query.params']['sprint'] ]) and type not in ('Task', 'Technical task') and status not in ('Resolved')" maxNumResults="100" config-ref=""/>        
+        <jira:get-issues-from-jql-search  connectionUser="#[payload.get('jira.user')]" connectionPassword="#[payload.get('jira.password')]" connectionAddress="#[payload.get('jira.address')]"  doc:name="Jira" jqlSearch="project = #[payload.get('jira.project')] and sprint in (#[message.inboundProperties['http.query.params']['sprint'] ]) and type not in ('Task', 'Technical task') and status not in ('Resolved')" maxNumResults="100" config-ref="Jira"/>        
     </flow>
     
 </mule>

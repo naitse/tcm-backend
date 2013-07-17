@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="suites">
-    <flow SubFlow="false" name="getTcsForStuitesByProject" entity-id="d6077810-23e1-47da-a43d-aede511dd3bb">
+    <flow SubFlow="false" name="getTcsForStuitesByProject" entity-id="ccc2ad8f-0251-4756-98ce-5793df49354f">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -77,7 +77,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="subgetTcsForStuitesByProject" entity-id="2a4c8961-2528-405a-876d-0c3fd0d408c8">
+    <flow SubFlow="false" name="subgetTcsForStuitesByProject" entity-id="97242338-0307-438c-a802-581dda695141">
         <properties>
             <property value="synchronous" name="processingStrategy"/>
             <property value="synchronous" name="processingStrategy2"/>
@@ -170,7 +170,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getSuitesforTc" entity-id="a372f28b-3904-436d-b3f2-854219ca481d">
+    <flow SubFlow="false" name="getSuitesforTc" entity-id="eb103e74-1f46-4b74-88b6-140497bb118d">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -278,7 +278,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="removeSuitesforTc" entity-id="f6ab3f75-71a4-48c8-bc05-23bed7dc6321">
+    <flow SubFlow="false" name="removeSuitesforTc" entity-id="52cd4046-a4a4-4df6-bc00-c6084a815746">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -376,7 +376,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="insertSuitesforTc" entity-id="124b13ad-8863-40b1-8b37-958c72664ebd">
+    <flow SubFlow="false" name="insertSuitesforTc" entity-id="04349f78-c845-428d-b1b1-7712b77c96b5">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -483,7 +483,7 @@
             </endpoint>
         </lane>
     </flow>
-    <flow SubFlow="false" name="addSuite" entity-id="510c2644-4dfa-49ad-8548-d1a147ff2e3b">
+    <flow SubFlow="false" name="addSuite" entity-id="15d808cf-ff20-459a-abae-922f331d6e0b">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -600,7 +600,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="removeSuite" entity-id="cb47c4d8-5e0a-485e-be14-b99a0ececf2d">
+    <flow SubFlow="false" name="addSubSuite" entity-id="a57df406-7f73-4016-8a6a-9f8fb7213280">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -628,7 +628,7 @@
                     <property name="transformer-refs"/>
                     <property name="httpLabel"/>
                     <property name="address"/>
-                    <property value="removeSuite" name="path"/>
+                    <property value="addSubSuite" name="path"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
                     <property name="method"/>
@@ -653,8 +653,8 @@
             <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable" entity-id="Variable#11">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
-                    <property value="suiteId" name="variableName"/>
-                    <property value="#[message.inboundProperties['http.query.params']['suiteId']]" name="value"/>
+                    <property value="label" name="variableName"/>
+                    <property value="#[message.inboundProperties['http.query.params']['label']]" name="value"/>
                     <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
                     <property value="57" name="auxiliary;index"/>
                 </properties>
@@ -677,7 +677,7 @@
                     <property value="-1" name="queryTimeout"/>
                     <property name="disableTransportTransformer"/>
                     <property value="request-response" name="exchange-pattern"/>
-                    <property value="removeSuite" name="queryKey"/>
+                    <property value="addSuite" name="queryKey"/>
                     <property name="tracking:enable-default-events"/>
                     <property name="ref"/>
                     <property name="transformer-refs"/>
@@ -689,8 +689,8 @@
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL removeSuite(#[flowVars['suiteId']],#[flowVars['projectId']])" name="value"/>
-                        <property value="removeSuite" name="key"/>
+                        <property value="CALL addSubSuite(#[flowVars['label']],#[flowVars['projectId']],#[message.inboundProperties['http.query.params']['parentId']])" name="value"/>
+                        <property value="addSuite" name="key"/>
                         <property value="60" name="auxiliary;index"/>
                         <property value="60" name="auxiliary;wrapIn"/>
                     </property-collection>
@@ -717,7 +717,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="getSuites" entity-id="7e55270c-0b74-4e44-89a2-96fe76265455">
+    <flow SubFlow="false" name="getSubSuite" entity-id="ae950d97-8405-4bcc-9a36-6f3c5d16a58f">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -727,7 +727,7 @@
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#8">
             <graphicalData height="0" width="0" y="0" x="0"/>
-            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#7">
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="getSuitesforTc" entity-id="HTTP#7">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="${http.port}" name="port"/>
@@ -745,7 +745,7 @@
                     <property name="transformer-refs"/>
                     <property name="httpLabel"/>
                     <property name="address"/>
-                    <property value="getSuites" name="path"/>
+                    <property value="getSubSuite" name="path"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
                     <property name="method"/>
@@ -767,15 +767,6 @@
                     <property value="66" name="auxiliary;index"/>
                 </properties>
             </pattern>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="projectId" entity-id="Variable#13">
-                <graphicalData height="0" width="0" y="0" x="0"/>
-                <properties>
-                    <property value="projectId" name="variableName"/>
-                    <property value="#[message.inboundProperties['http.query.params']['projectId']]" name="value"/>
-                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
-                    <property value="67" name="auxiliary;index"/>
-                </properties>
-            </pattern>
             <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#7">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
@@ -785,22 +776,22 @@
                     <property value="-1" name="queryTimeout"/>
                     <property name="disableTransportTransformer"/>
                     <property value="request-response" name="exchange-pattern"/>
-                    <property value="getSuites" name="queryKey"/>
+                    <property value="getSuitesforTc" name="queryKey"/>
                     <property name="tracking:enable-default-events"/>
                     <property name="ref"/>
                     <property name="transformer-refs"/>
                     <property name="address"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
-                    <property value="68" name="auxiliary;index"/>
+                    <property value="67" name="auxiliary;index"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL getSuites(#[flowVars['projectId']], #[message.inboundProperties['http.query.params']['interop']])" name="value"/>
-                        <property value="getSuites" name="key"/>
-                        <property value="69" name="auxiliary;index"/>
-                        <property value="69" name="auxiliary;wrapIn"/>
+                        <property value="CALL getSubSuite(#[message.inboundProperties['http.query.params']['parentId']])" name="value"/>
+                        <property value="getSuitesforTc" name="key"/>
+                        <property value="68" name="auxiliary;index"/>
+                        <property value="68" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </endpoint>
@@ -808,7 +799,7 @@
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="#[payload.resultset1]" name="value"/>
-                    <property value="70" name="auxiliary;index"/>
+                    <property value="69" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" name="Object to JSON" entity-id="Object to JSON#5">
@@ -820,22 +811,22 @@
                     <property name="encoding"/>
                     <property name="mapper-ref"/>
                     <property name="mimeType"/>
-                    <property value="71" name="auxiliary;index"/>
+                    <property value="70" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="createTestCaseForSuite" entity-id="94461d48-b2f0-4389-b09f-2b963f454c36">
+    <flow SubFlow="false" name="removeSuite" entity-id="7b07910c-29b4-4805-8363-b1a5ff64312c">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
-            <property value="72" name="auxiliary;index"/>
+            <property value="71" name="auxiliary;index"/>
         </properties>
         <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#9">
             <graphicalData height="0" width="0" y="0" x="0"/>
-            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#8">
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="addSuite" entity-id="HTTP#8">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="${http.port}" name="port"/>
@@ -853,18 +844,18 @@
                     <property name="transformer-refs"/>
                     <property name="httpLabel"/>
                     <property name="address"/>
-                    <property value="createTestCaseForSuite" name="path"/>
+                    <property value="removeSuite" name="path"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
                     <property name="method"/>
                     <property name="user"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
-                    <property value="73" name="auxiliary;index"/>
+                    <property value="72" name="auxiliary;index"/>
                     <property name="connector-ref"/>
                 </properties>
             </endpoint>
-            <unknown index="74" description="false" entity-id="unknown#8">
+            <unknown index="73" description="false" entity-id="unknown#8">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <content>&lt;cors:filter xmlns:cors=&quot;http://www.mulesoft.org/schema/mule/cors&quot; config-ref=&quot;tcm-cors&quot;/&gt;</content>
             </unknown>
@@ -872,14 +863,23 @@
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="validate_api_key" name="name"/>
-                    <property value="75" name="auxiliary;index"/>
+                    <property value="74" name="auxiliary;index"/>
                 </properties>
             </pattern>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="suiteId" entity-id="Variable#14">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable" entity-id="Variable#13">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="suiteId" name="variableName"/>
                     <property value="#[message.inboundProperties['http.query.params']['suiteId']]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="75" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable" entity-id="Variable#14">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="projectId" name="variableName"/>
+                    <property value="#[message.inboundProperties['http.query.params']['projectId']]" name="value"/>
                     <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
                     <property value="76" name="auxiliary;index"/>
                 </properties>
@@ -893,7 +893,7 @@
                     <property value="-1" name="queryTimeout"/>
                     <property name="disableTransportTransformer"/>
                     <property value="request-response" name="exchange-pattern"/>
-                    <property value="createTestCaseForSuite" name="queryKey"/>
+                    <property value="removeSuite" name="queryKey"/>
                     <property name="tracking:enable-default-events"/>
                     <property name="ref"/>
                     <property name="transformer-refs"/>
@@ -905,8 +905,8 @@
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
-                        <property value="CALL createTestCaseForSuite(#[variable:suiteId], #[json:name], #[json:description], #[json:proposed])" name="value"/>
-                        <property value="createTestCaseForSuite" name="key"/>
+                        <property value="CALL removeSuite(#[flowVars['suiteId']],#[flowVars['projectId']])" name="value"/>
+                        <property value="removeSuite" name="key"/>
                         <property value="78" name="auxiliary;index"/>
                         <property value="78" name="auxiliary;wrapIn"/>
                     </property-collection>
@@ -933,7 +933,7 @@
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="deleteTestCaseSuite" entity-id="ff5c7f9b-4d26-46c1-b5e3-900a00a47167">
+    <flow SubFlow="false" name="getSuites" entity-id="394f53dd-b750-41c2-abac-82daa045bfc5">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
@@ -961,7 +961,7 @@
                     <property name="transformer-refs"/>
                     <property name="httpLabel"/>
                     <property name="address"/>
-                    <property value="deleteTestCaseSuite" name="path"/>
+                    <property value="getSuites" name="path"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
                     <property name="method"/>
@@ -983,7 +983,223 @@
                     <property value="84" name="auxiliary;index"/>
                 </properties>
             </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="projectId" entity-id="Variable#15">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="projectId" name="variableName"/>
+                    <property value="#[message.inboundProperties['http.query.params']['projectId']]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="85" name="auxiliary;index"/>
+                </properties>
+            </pattern>
             <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#9">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="businessEventsLabel"/>
+                    <property name="pollingFrequency"/>
+                    <property value="-1" name="queryTimeout"/>
+                    <property name="disableTransportTransformer"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="getSuites" name="queryKey"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property value="86" name="auxiliary;index"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="Database" name="connector-ref"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
+                        <property value="CALL getSuites(#[flowVars['projectId']], #[message.inboundProperties['http.query.params']['interop']])" name="value"/>
+                        <property value="getSuites" name="key"/>
+                        <property value="87" name="auxiliary;index"/>
+                        <property value="87" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#7">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[payload.resultset1]" name="value"/>
+                    <property value="88" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" name="Object to JSON" entity-id="Object to JSON#7">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="sourceClass"/>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mapper-ref"/>
+                    <property name="mimeType"/>
+                    <property value="89" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="createTestCaseForSuite" entity-id="db305225-1962-4551-8883-33c197d6e48e">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="90" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#11">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#10">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="${http.port}" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property value="createTestCaseForSuite" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="91" name="auxiliary;index"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <unknown index="92" description="false" entity-id="unknown#10">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <content>&lt;cors:filter xmlns:cors=&quot;http://www.mulesoft.org/schema/mule/cors&quot; config-ref=&quot;tcm-cors&quot;/&gt;</content>
+            </unknown>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#11">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="validate_api_key" name="name"/>
+                    <property value="93" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="suiteId" entity-id="Variable#16">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="suiteId" name="variableName"/>
+                    <property value="#[message.inboundProperties['http.query.params']['suiteId']]" name="value"/>
+                    <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="94" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#10">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name=""/>
+                    <property name="businessEventsLabel"/>
+                    <property name="pollingFrequency"/>
+                    <property value="-1" name="queryTimeout"/>
+                    <property name="disableTransportTransformer"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="createTestCaseForSuite" name="queryKey"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property value="95" name="auxiliary;index"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="Database" name="connector-ref"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
+                        <property value="CALL createTestCaseForSuite(#[variable:suiteId], #[json:name], #[json:description], #[json:proposed])" name="value"/>
+                        <property value="createTestCaseForSuite" name="key"/>
+                        <property value="96" name="auxiliary;index"/>
+                        <property value="96" name="auxiliary;wrapIn"/>
+                    </property-collection>
+                </properties>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#8">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="#[payload.resultset1]" name="value"/>
+                    <property value="97" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <pattern type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" name="Object to JSON" entity-id="Object to JSON#8">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property name="sourceClass"/>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mapper-ref"/>
+                    <property name="mimeType"/>
+                    <property value="98" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="deleteTestCaseSuite" entity-id="378ece97-0bdb-46fd-9246-4359e56028b4">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="99" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#12">
+            <graphicalData height="0" width="0" y="0" x="0"/>
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#11">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="${http.port}" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="followRedirects"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property name="keep-alive"/>
+                    <property name="contentType"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="httpLabel"/>
+                    <property name="address"/>
+                    <property value="deleteTestCaseSuite" name="path"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="method"/>
+                    <property name="user"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property value="100" name="auxiliary;index"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <unknown index="101" description="false" entity-id="unknown#11">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <content>&lt;cors:filter xmlns:cors=&quot;http://www.mulesoft.org/schema/mule/cors&quot; config-ref=&quot;tcm-cors&quot;/&gt;</content>
+            </unknown>
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#12">
+                <graphicalData height="0" width="0" y="0" x="0"/>
+                <properties>
+                    <property value="validate_api_key" name="name"/>
+                    <property value="102" name="auxiliary;index"/>
+                </properties>
+            </pattern>
+            <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#11">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property name=""/>
@@ -999,38 +1215,38 @@
                     <property name="address"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
-                    <property value="85" name="auxiliary;index"/>
+                    <property value="103" name="auxiliary;index"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
                         <property value="CALL deleteTestCase(#[message.inboundProperties['http.query.params']['tcId']])" name="value"/>
                         <property value="deleteTestCaseSuite" name="key"/>
-                        <property value="86" name="auxiliary;index"/>
-                        <property value="86" name="auxiliary;wrapIn"/>
+                        <property value="104" name="auxiliary;index"/>
+                        <property value="104" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </endpoint>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#7">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#9">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="true" name="value"/>
-                    <property value="87" name="auxiliary;index"/>
+                    <property value="105" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
     </flow>
-    <flow SubFlow="false" name="instanceSuite" entity-id="2182294c-0da1-4e84-af35-e11a4c4f162f">
+    <flow SubFlow="false" name="instanceSuite" entity-id="0242bbe1-faf2-459a-a758-611e6d343acc">
         <properties>
             <property name="processingStrategy"/>
             <property name="processingStrategy2"/>
             <property name="bussinessEventsLabel"/>
             <property name="tracking:enable-default-events"/>
-            <property value="88" name="auxiliary;index"/>
+            <property value="106" name="auxiliary;index"/>
         </properties>
-        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#11">
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#13">
             <graphicalData height="0" width="0" y="0" x="0"/>
-            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#10">
+            <endpoint message-exchange-pattern="RequestResponse" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#12">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="${http.port}" name="port"/>
@@ -1055,22 +1271,22 @@
                     <property name="user"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
-                    <property value="89" name="auxiliary;index"/>
+                    <property value="107" name="auxiliary;index"/>
                     <property name="connector-ref"/>
                 </properties>
             </endpoint>
-            <unknown index="90" description="false" entity-id="unknown#10">
+            <unknown index="108" description="false" entity-id="unknown#12">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <content>&lt;cors:filter xmlns:cors=&quot;http://www.mulesoft.org/schema/mule/cors&quot; config-ref=&quot;tcm-cors&quot;/&gt;</content>
             </unknown>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#11">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/flow-ref" name="Flow Reference" entity-id="Flow Reference#13">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="validate_api_key" name="name"/>
-                    <property value="91" name="auxiliary;index"/>
+                    <property value="109" name="auxiliary;index"/>
                 </properties>
             </pattern>
-            <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#10">
+            <endpoint message-exchange-pattern="OneWay" direction="Outbound" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" name="Database" entity-id="Database#12">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property name=""/>
@@ -1086,25 +1302,25 @@
                     <property name="address"/>
                     <property name="encoding"/>
                     <property name="responseTransformer-refs"/>
-                    <property value="92" name="auxiliary;index"/>
+                    <property value="110" name="auxiliary;index"/>
                     <property name="responseTimeout"/>
                     <property name="mimeType"/>
                     <property value="Database" name="connector-ref"/>
                     <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;0">
                         <property value="CALL instanceSuite(#[json:iterationId],#[json:suiteId])" name="value"/>
                         <property value="instanceSuite" name="key"/>
-                        <property value="93" name="auxiliary;index"/>
-                        <property value="93" name="auxiliary;wrapIn"/>
+                        <property value="111" name="auxiliary;index"/>
+                        <property value="111" name="auxiliary;wrapIn"/>
                     </property-collection>
                 </properties>
             </endpoint>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable" entity-id="Variable#15">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/variable-transformer" name="Variable" entity-id="Variable#17">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="featuresMemberId" name="variableName"/>
                     <property value="#[payload.resultset1.get(0).featureId]" name="value"/>
                     <property value="http://www.mulesoft.org/schema/mule/core/set-variable" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
-                    <property value="94" name="auxiliary;index"/>
+                    <property value="112" name="auxiliary;index"/>
                 </properties>
             </pattern>
             <pattern type="http://www.mulesoft.org/schema/mule/core/logger" name="Logger" entity-id="Logger#2">
@@ -1113,14 +1329,14 @@
                     <property value="NEW FEATURE #[flowVars['featuresMemberId']]" name="message"/>
                     <property name="category"/>
                     <property value="INFO" name="level"/>
-                    <property value="95" name="auxiliary;index"/>
+                    <property value="113" name="auxiliary;index"/>
                 </properties>
             </pattern>
-            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#8">
+            <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#10">
                 <graphicalData height="0" width="0" y="0" x="0"/>
                 <properties>
                     <property value="true" name="value"/>
-                    <property value="96" name="auxiliary;index"/>
+                    <property value="114" name="auxiliary;index"/>
                 </properties>
             </pattern>
         </lane>
