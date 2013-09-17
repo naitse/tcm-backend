@@ -56,7 +56,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     
     <flow name="testcases_flow" doc:name="testcases_flow">
-        <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--         <flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
         <set-variable value="#[variable:featuresMemberId]" variableName="itemId" doc:name="itemId" />
         <set-variable value="#[message.inboundProperties[&quot;http.query.params&quot;][&quot;userName&quot;]]" variableName="userName" doc:name="userName" />
         <component class="com.mulesoft.pusher.PusherTriggerInUseBy" doc:name="Java"/>
@@ -67,7 +67,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         
     </flow>
     <flow name="executedTestCases" doc:name="executedTestCases">
-    	<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="getTcsRunned" queryTimeout="-1" connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getTcsRunned" value="CALL executedTestCases(#[variable:releasesMemberId], #[variable:iterationsMemberId], #[variable:featuresMemberId])"/>
         </jdbc-ee:outbound-endpoint>
@@ -246,14 +246,14 @@ json {
    <flow name="createTestCase" doc:name="createTestCase">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="createTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="createTC" value="CALL createTestCase(#[variable:featuresMemberId], #[json:name], #[json:description], #[json:proposed])"/>
+            <jdbc-ee:query key="createTC" value="CALL createTestCase(#[variable:featuresMemberId], #[json:name], #[json:description], #[json:proposed],#[json:priority])"/>
         </jdbc-ee:outbound-endpoint>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
     <flow name="updateTestCase" doc:name="updateTestCase">
         <flow-ref name="validate_api_key" doc:name="Flow Reference"/>
         <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="updateTC" queryTimeout="-1" connector-ref="Database" doc:name="Database">
-            <jdbc-ee:query key="updateTC" value="CALL updateTestCase(#[variable:testcasesMemberId], #[json:name], #[json:description], #[json:proposed])"/>
+            <jdbc-ee:query key="updateTC" value="CALL updateTestCase(#[variable:testcasesMemberId], #[json:name], #[json:description], #[json:proposed],#[json:priority])"/>
         </jdbc-ee:outbound-endpoint>
         
     </flow>
@@ -287,6 +287,15 @@ json {
             <jdbc-ee:query key="getMetric-executed" value="CALL metrics_executed(#[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+         <flow name="metricsExecutedRls" doc:name="metricsExecutedRls">
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="metricsExecutedRls" doc:name="HTTP"/>
+		<cors:filter config-ref="tcm-cors"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="metricsExecutedRls" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="metricsExecutedRls" value="CALL metrics_executed_rls(#[message.inboundProperties['http.query.params']['rlsId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
          <flow name="metricsExecutedFeature" doc:name="metricsExecutedFeature">
 <!--         <flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
@@ -324,6 +333,15 @@ json {
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
+   </flow> 
+            <flow name="getTcStatusByFeatureByRls" doc:name="getTcStatusByFeatureByRls">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="getTcStatusByFeatureByRls" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+   		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getTcStatusByFeatureByRls" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="getTcStatusByFeatureByRls" value="CALL getTcStatusByFeatureByRls(#[message.inboundProperties['http.query.params']['rlsId']],#[message.inboundProperties['http.query.params']['statusId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
    </flow>     
     <flow name="getDailyExecution" doc:name="getDailyExecution">
 <!--     	<flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
@@ -331,6 +349,15 @@ json {
             <jdbc-ee:query key="getDailyExecution" value="CALL metrics_dailyExecution(#[variable:iterationsMemberId])"/>
         </jdbc-ee:outbound-endpoint>
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+    </flow>
+        <flow name="metricsDailyExecutedRls" doc:name="metricsDailyExecutedRls">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="metricsDailyExecutedRls" doc:name="HTTP"/>
+        <cors:filter config-ref="tcm-cors"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="request-response" queryKey="metricsDailyExecutedRls" queryTimeout="-1" connector-ref="Database" doc:name="Database">
+            <jdbc-ee:query key="metricsDailyExecutedRls" value="CALL metrics_dailyExecution_rls(#[message.inboundProperties['http.query.params']['rlsId']])"/>
+        </jdbc-ee:outbound-endpoint>
+        <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
     
     <flow name="getIterationsTrend" doc:name="getIterationsTrend">
@@ -425,7 +452,7 @@ json {
         <set-payload value="#[payload.resultset1]" doc:name="Set Payload"/>
    </flow>
    <flow name="getFeaturesIterations" doc:name="getFeaturesIterations">
-   		<flow-ref name="validate_api_key" doc:name="Flow Reference"/>
+<!--    		<flow-ref name="validate_api_key" doc:name="Flow Reference"/> -->
    		<jdbc-ee:outbound-endpoint exchange-pattern="request-response"  queryKey="getFeaturesIterations" queryTimeout="-1"  connector-ref="Database" doc:name="Database">
             <jdbc-ee:query key="getFeaturesIterations" value="CALL getFeaturesIterations()"/>
         </jdbc-ee:outbound-endpoint>

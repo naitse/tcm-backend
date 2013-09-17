@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="tcm-api">
+    <global-unknown index="1" parentIndex="0" unknownName="tcmInterface" description="false" wrapNSURL="http://www.mulesoft.org/schema/mule/api-rest" wrapNSPref="" wrapIn="api" entity-id="global-unknown#1">
+        <content>&lt;interface xmlns=&quot;http://www.mulesoft.org/schema/mule/api-rest&quot; name=&quot;tcmInterface&quot;&gt;
+      	&lt;document-resource name=&quot;releases_iterations&quot;&gt;
+        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+        	&lt;retrieve flow-ref=&quot;RlsIterations&quot;/&gt;
+        &lt;/document-resource&gt;
+        &lt;collection-resource name=&quot;releases&quot;&gt;
+        	&lt;retrieve flow-ref=&quot;getReleases&quot;&gt;
+           		&lt;representation mediaType=&quot;application/json&quot;/&gt;
+           	&lt;/retrieve&gt;
+        	&lt;member&gt;
+        		&lt;representation mediaType=&quot;application/json&quot;/&gt;
+        		&lt;create flow-ref=&quot;createRelease&quot;/&gt;
+	       		&lt;document-resource name=&quot;metricgetIterationsTrend&quot;&gt;
+		        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+		        	&lt;retrieve flow-ref=&quot;getIterationsTrend&quot;/&gt;
+		        &lt;/document-resource&gt;
+		        &lt;document-resource name=&quot;metricGetCarriedOverFeatures&quot;&gt;
+		        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+		        	&lt;retrieve flow-ref=&quot;getCarriedOverFeatures&quot;/&gt;
+		        &lt;/document-resource&gt;
+		        &lt;document-resource name=&quot;features_iterations&quot;&gt;
+		        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+		        	&lt;retrieve flow-ref=&quot;getFeaturesIterations&quot;/&gt;
+		        &lt;/document-resource&gt;
+        		&lt;collection-resource name=&quot;iterations&quot;&gt;
+		       		&lt;member&gt;
+		       			&lt;representation mediaType=&quot;application/json&quot;/&gt;
+		       			&lt;create flow-ref=&quot;createIteration&quot;/&gt;
+			       		&lt;document-resource name=&quot;metricDailyExecution&quot;&gt;
+				        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+				        	&lt;retrieve flow-ref=&quot;getDailyExecution&quot;/&gt;
+				        &lt;/document-resource&gt;
+				        &lt;document-resource name=&quot;plan&quot;&gt;
+				        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+				        	&lt;retrieve flow-ref=&quot;getPlan&quot;/&gt;
+				        &lt;/document-resource&gt;
+				        &lt;document-resource name=&quot;metricExecuted&quot;&gt;
+				        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+				        	&lt;retrieve flow-ref=&quot;getMetric-executed&quot;/&gt;
+				        &lt;/document-resource&gt;
+				        &lt;collection-resource name=&quot;features&quot;&gt;            
+				       		&lt;retrieve flow-ref=&quot;features_flow&quot;&gt;
+				       		&lt;representation mediaType=&quot;application/json&quot;/&gt;
+				       		&lt;/retrieve&gt;   
+				       		&lt;member&gt;
+					        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+					        	&lt;create flow-ref=&quot;createRequirement&quot;/&gt;
+					        	&lt;document-resource name=&quot;executedtestcases&quot;&gt;
+						            &lt;representation mediaType=&quot;application/json&quot;/&gt;
+						            &lt;retrieve flow-ref=&quot;executedTestCases&quot;/&gt;	            
+					        	&lt;/document-resource&gt;
+					        	&lt;collection-resource name=&quot;testcases&quot;&gt;
+							        &lt;retrieve flow-ref=&quot;testcases_flow&quot;&gt;
+							        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+							        &lt;/retrieve&gt;
+							        &lt;member&gt;
+								    	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+								        &lt;create flow-ref=&quot;createTestCase&quot;/&gt;
+								        &lt;update flow-ref=&quot;updateTestCase&quot;/&gt;
+								        &lt;delete flow-ref=&quot;deleteTestCase&quot;/&gt;
+								        &lt;document-resource name=&quot;status&quot;&gt;
+						            		&lt;representation mediaType=&quot;application/json&quot;/&gt;
+						            		&lt;update flow-ref=&quot;updateTestCaseStatus&quot;/&gt;
+									    &lt;/document-resource&gt;
+					    			&lt;/member&gt; 
+								&lt;/collection-resource&gt;
+						    &lt;/member&gt;
+			    		&lt;/collection-resource&gt;
+		       		&lt;/member&gt;
+ 				&lt;/collection-resource&gt;
+        	&lt;/member&gt;
+        &lt;/collection-resource&gt;
+	      
+         &lt;collection-resource name=&quot;users&quot;&gt;
+	    	&lt;member&gt;
+	    		&lt;collection-resource name=&quot;projects&quot;&gt;
+	    			 &lt;retrieve flow-ref=&quot;getUserProjects&quot;&gt;
+			        	&lt;representation mediaType=&quot;application/json&quot;/&gt;
+			        &lt;/retrieve&gt;
+			        &lt;member&gt;
+			        &lt;/member&gt;
+	    		&lt;/collection-resource&gt;
+	    	&lt;/member&gt;	    
+	    &lt;/collection-resource&gt; 
+    			  
+        &lt;document-resource name=&quot;jira&quot;&gt;
+            &lt;representation mediaType=&quot;application/json&quot;/&gt;
+            
+            &lt;document-resource name=&quot;iterations&quot;&gt;
+	            &lt;representation mediaType=&quot;application/json&quot;/&gt;
+	            &lt;retrieve flow-ref=&quot;jira-get-iterations&quot;/&gt;
+	            
+	        &lt;/document-resource&gt; 
+	        &lt;document-resource name=&quot;issues&quot;&gt;
+	            &lt;representation mediaType=&quot;application/json&quot;/&gt;
+	            &lt;retrieve flow-ref=&quot;jira-get-issues&quot;/&gt;	            
+	        &lt;/document-resource&gt;
+        &lt;/document-resource&gt;
+		
+		&lt;collection-resource name=&quot;plugins&quot;&gt;
+        	&lt;retrieve flow-ref=&quot;getPlugins&quot;&gt;
+           		&lt;representation mediaType=&quot;application/json&quot;/&gt;
+           	&lt;/retrieve&gt;
+           	&lt;member&gt;
+           		&lt;update flow-ref=&quot;savePluginsData&quot;/&gt;
+           	&lt;/member&gt;
+        &lt;/collection-resource&gt;
+	&lt;/interface&gt;</content>
+    </global-unknown>
+    <global-unknown index="72" parentIndex="0" unknownName="myService" description="false" wrapNSURL="http://www.mulesoft.org/schema/mule/api-rest" wrapNSPref="" wrapIn="api" entity-id="global-unknown#2">
+        <content>&lt;service xmlns=&quot;http://www.mulesoft.org/schema/mule/api-rest&quot; name=&quot;myService&quot; interface-ref=&quot;tcmInterface&quot;&gt;
+		&lt;http:inbound-endpoint xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; port=&quot;${http.port}&quot; host=&quot;localhost&quot; path=&quot;api&quot;&gt;
+		&lt;cors:filter xmlns:cors=&quot;http://www.mulesoft.org/schema/mule/cors&quot; config-ref=&quot;tcm-cors&quot;/&gt;
+		&lt;mule:object-to-string-transformer xmlns:mule=&quot;http://www.mulesoft.org/schema/mule/core&quot; name=&quot;name&quot;/&gt;&lt;/http:inbound-endpoint&gt;
+	&lt;/service&gt;</content>
+    </global-unknown>
+</mule-configuration>
